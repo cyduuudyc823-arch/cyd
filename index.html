@@ -34,6 +34,16 @@
 
     <!-- 3. Styles -->
     <style>
+        /* Special Fonts for Constellation Garden */
+        @font-face {
+            font-family: 'Snell Roundhand';
+            src: local('Snell Roundhand'), local('SnellRoundhand');
+        }
+        @font-face {
+            font-family: '03HomuraM-SemiLight';
+            src: local('03HomuraM-SemiLight');
+        }
+
         body {
             background-color: #050505;
             color: #F0F0F0;
@@ -99,45 +109,71 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
             transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .project-preview-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .project-preview-box img, .project-preview-box video { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
         }
+        .project-title-container { min-height: 3.5rem; margin-top: 1rem; margin-bottom: 0.5rem; }
 
-        .project-title-container {
-            min-height: 3.5rem;
-            margin-top: 1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        /* Vertical Guide + Arrow */
         .category-header { font-weight: 900; letter-spacing: 0.4em; color: #CCFF00; }
         .vertical-arrow-guide {
-            width: 1px;
-            height: 50px;
+            width: 1px; height: 50px;
             background: linear-gradient(to bottom, #CCFF00, transparent);
-            margin: 1rem 0 2rem 0;
-            opacity: 0.6;
-            position: relative;
+            margin: 1rem 0 2rem 0; opacity: 0.6; position: relative;
         }
         .vertical-arrow-guide::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 8px;
-            height: 8px;
-            border-right: 1px solid #CCFF00;
-            border-bottom: 1px solid #CCFF00;
-            transform: translateX(-50%) rotate(45deg);
-            clip-path: polygon(100% 0, 100% 100%, 0 100%); 
+            content: ''; position: absolute; bottom: 0; left: 0; width: 8px; height: 8px;
+            border-right: 1px solid #CCFF00; border-bottom: 1px solid #CCFF00;
+            transform: translateX(-50%) rotate(45deg); clip-path: polygon(100% 0, 100% 100%, 0 100%); 
         }
 
-        /* Seamless Gallery */
+        /* Default Gallery Slots */
         .visual-gallery { display: flex; flex-direction: column; width: 100%; margin: 0; padding: 0; }
         .visual-slot { width: 100%; aspect-ratio: 1728 / 1117; overflow: hidden; margin: 0; padding: 0; }
         .visual-slot img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: lighten; display: block; }
+
+        /* --- CONSTELLATION GARDEN SPECIFIC STYLES --- */
+        .cursive-font { font-family: 'Snell Roundhand', cursive; }
+        .main-text-star { font-family: '03HomuraM-SemiLight', "Source Han Serif CN", "Songti SC", serif; line-height: 1.6; font-size: 14px; }
+        .video-container video { width: 100%; height: auto; display: block; }
+        
+        .section-dark-star { background-color: #000; padding: 60px 40px; color: #fff; text-align: left; }
+        .section-light-star { background-color: #fff; color: #000; padding: 80px 0 0 0; position: relative; min-height: 100vh; text-align: left; }
+
+        .planet-crop { width: 30%; overflow: hidden; display: flex; justify-content: flex-start; }
+        .planet-crop video { width: 200%; max-width: none; margin-left: -100%; }
+
+        .video-p2-container { width: 320px; height: 240px; overflow: hidden; background: transparent; display: flex; align-items: center; justify-content: center; }
+        .video-p2-container video { width: 100%; height: 100%; object-fit: contain; }
+
+        .interactive-container-star { position: relative; width: 100vw; left: 50%; transform: translateX(-50%); overflow: hidden; background-color: #fff; }
+        .base-image-star { width: 100%; height: auto; display: block; }
+
+        .floating-logo-star {
+            position: absolute; top: calc(15% + 6.0cm); left: calc(10% - 2.3cm);
+            width: 18%; pointer-events: none; transition: transform 0.1s ease-out; z-index: 30; 
+        }
+
+        .overlay-video-p9-star {
+            position: absolute; bottom: calc(1319px - 12.5cm); left: 10.5%; 
+            width: 15.8%; aspect-ratio: 418 / 900; border-radius: 20px; 
+            overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            transition: transform 0.15s ease-out; z-index: 20;
+        }
+        .overlay-video-p9-star video { width: 100%; height: 100%; object-fit: cover; }
+
+        @media (max-width: 1024px) {
+            .overlay-video-p9-star { bottom: 20%; width: 20%; left: 8%; }
+        }
+
+        @media (max-width: 768px) {
+            .section-dark-star { padding: 40px 20px; }
+            .planet-crop { width: 40%; }
+            .video-p2-container { width: 240px; height: 180px; }
+            .floating-logo-star { width: 30%; top: calc(15% + 4.0cm); left: calc(10% - 1.3cm); }
+            .overlay-video-p9-star { width: 35%; left: 5%; bottom: 15%; }
+        }
     </style>
 </head>
 <body>
@@ -182,23 +218,14 @@
                     </div>
                 </section>
 
-                <!-- Works Section (Interleaved Master Grid) -->
+                <!-- Works Section -->
                 <section id="projects" class="py-24 px-6 md:px-20 border-t border-white/5">
                     <h2 class="font-display text-4xl text-mist flex items-center mb-16"><span class="w-3 h-3 bg-acid rounded-full mr-4"></span>Works</h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-12 items-start" @mouseleave="focusedProject = null">
-                        
-                        <!-- Headers Row -->
-                        <div class="flex flex-col items-start">
-                            <span class="category-header text-[14px] md:text-[18px] uppercase">Service Design</span>
-                            <div class="vertical-arrow-guide"></div>
-                        </div>
-                        <div class="hidden md:flex flex-col items-start">
-                            <span class="category-header text-[14px] md:text-[18px] uppercase">Visual Design</span>
-                            <div class="vertical-arrow-guide"></div>
-                        </div>
+                        <div class="flex flex-col items-start"><span class="category-header text-[14px] md:text-[18px] uppercase">Service Design</span><div class="vertical-arrow-guide"></div></div>
+                        <div class="hidden md:flex flex-col items-start"><span class="category-header text-[14px] md:text-[18px] uppercase">Visual Design</span><div class="vertical-arrow-guide"></div></div>
 
-                        <!-- Manual Rows Interleaving for Vertical Alignment -->
                         <template v-for="rowIndex in maxProjectRows" :key="rowIndex">
                             <!-- Service Design Column -->
                             <div v-if="getProjectByRow('Service', rowIndex-1)" 
@@ -207,14 +234,13 @@
                                  :class="{'opacity-20': focusedProject && focusedProject !== getProjectByRow('Service', rowIndex-1).id}"
                                  @mouseenter="focusedProject = getProjectByRow('Service', rowIndex-1).id; cursorHover()" @mouseleave="cursorLeave">
                                 <div class="project-preview-box">
-                                    <img :src="getProjectByRow('Service', rowIndex-1).cardImg || 'https://via.placeholder.com/1728x1117/0a0a0a/0a0a0a?text=+'" class="grayscale group-hover:grayscale-0 transition-all duration-1000">
+                                    <video v-if="getProjectByRow('Service', rowIndex-1).cardImg?.endsWith('.mp4')" 
+                                           :src="getProjectByRow('Service', rowIndex-1).cardImg" 
+                                           autoplay muted loop playsinline class="grayscale group-hover:grayscale-0 transition-all duration-1000"></video>
+                                    <img v-else :src="getProjectByRow('Service', rowIndex-1).cardImg || 'https://via.placeholder.com/1728x1117/0a0a0a/0a0a0a?text=+'" class="grayscale group-hover:grayscale-0 transition-all duration-1000">
                                 </div>
-                                <div class="project-title-container">
-                                    <h3 class="font-display text-xl md:text-2xl font-bold text-mist group-hover:text-acid transition-colors leading-tight">{{ getProjectByRow('Service', rowIndex-1).name }}</h3>
-                                </div>
-                                <div class="flex flex-wrap gap-2 pt-1">
-                                    <span v-for="tag in getProjectByRow('Service', rowIndex-1).tags" :key="tag" class="pill-tag">{{ tag }}</span>
-                                </div>
+                                <div class="project-title-container"><h3 class="font-display text-xl md:text-2xl font-bold text-mist group-hover:text-acid transition-colors leading-tight">{{ getProjectByRow('Service', rowIndex-1).name }}</h3></div>
+                                <div class="flex flex-wrap gap-2 pt-1"><span v-for="tag in getProjectByRow('Service', rowIndex-1).tags" :key="tag" class="pill-tag">{{ tag }}</span></div>
                             </div>
                             <div v-else class="hidden md:block"></div>
 
@@ -225,14 +251,13 @@
                                  :class="{'opacity-20': focusedProject && focusedProject !== getProjectByRow('Visual', rowIndex-1).id}"
                                  @mouseenter="focusedProject = getProjectByRow('Visual', rowIndex-1).id; cursorHover()" @mouseleave="cursorLeave">
                                 <div class="project-preview-box">
-                                    <img :src="getProjectByRow('Visual', rowIndex-1).cardImg || 'https://via.placeholder.com/1728x1117/0a0a0a/0a0a0a?text=+'" class="grayscale group-hover:grayscale-0 transition-all duration-1000">
+                                    <video v-if="getProjectByRow('Visual', rowIndex-1).cardImg?.endsWith('.mp4')" 
+                                           :src="getProjectByRow('Visual', rowIndex-1).cardImg" 
+                                           autoplay muted loop playsinline class="grayscale group-hover:grayscale-0 transition-all duration-1000"></video>
+                                    <img v-else :src="getProjectByRow('Visual', rowIndex-1).cardImg || 'https://via.placeholder.com/1728x1117/0a0a0a/0a0a0a?text=+'" class="grayscale group-hover:grayscale-0 transition-all duration-1000">
                                 </div>
-                                <div class="project-title-container">
-                                    <h3 class="font-display text-xl md:text-2xl font-bold text-mist group-hover:text-acid transition-colors leading-tight">{{ getProjectByRow('Visual', rowIndex-1).name }}</h3>
-                                </div>
-                                <div class="flex flex-wrap gap-2 pt-1">
-                                    <span v-for="tag in getProjectByRow('Visual', rowIndex-1).tags" :key="tag" class="pill-tag">{{ tag }}</span>
-                                </div>
+                                <div class="project-title-container"><h3 class="font-display text-xl md:text-2xl font-bold text-mist group-hover:text-acid transition-colors leading-tight">{{ getProjectByRow('Visual', rowIndex-1).name }}</h3></div>
+                                <div class="flex flex-wrap gap-2 pt-1"><span v-for="tag in getProjectByRow('Visual', rowIndex-1).tags" :key="tag" class="pill-tag">{{ tag }}</span></div>
                             </div>
                             <div v-else class="hidden md:block"></div>
                         </template>
@@ -241,79 +266,86 @@
 
                 <footer id="contact" class="min-h-[50vh] flex flex-col justify-center items-center px-6 md:px-20 border-t border-white/5 text-center">
                     <p class="text-acid mb-6 text-sm font-mono tracking-widest uppercase">Get in Touch</p>
-                    <a :href="'mailto:' + profile.contact.email" class="block text-2xl md:text-4xl font-display font-bold hover:text-acid transition-colors mb-10 tracking-tighter" @mouseenter="cursorHover" @mouseleave="cursorLeave">
-                        {{ profile.contact.email }}
-                    </a>
-                    
-                    <a href="https://www.linkedin.com/in/yundu-chen-46b2ba397" target="_blank" class="flex items-center gap-3 text-gray-600 hover:text-white transition-all group" @mouseenter="cursorHover" @mouseleave="cursorLeave">
-                        <svg class="w-5 h-5 fill-current group-hover:text-acid transition-colors" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                        <span class="text-[10px] uppercase tracking-[0.3em] font-bold">Connect on LinkedIn</span>
-                    </a>
+                    <a :href="'mailto:' + profile.contact.email" class="block text-2xl md:text-4xl font-display font-bold hover:text-acid transition-colors mb-10 tracking-tighter" @mouseenter="cursorHover" @mouseleave="cursorLeave">{{ profile.contact.email }}</a>
+                    <a href="https://www.linkedin.com/in/yundu-chen-46b2ba397" target="_blank" class="flex items-center gap-3 text-gray-600 hover:text-white transition-all group" @mouseenter="cursorHover" @mouseleave="cursorLeave"><svg class="w-5 h-5 fill-current group-hover:text-acid transition-colors" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg><span class="text-[10px] uppercase tracking-[0.3em] font-bold">Connect on LinkedIn</span></a>
                     <div class="mt-24 text-gray-800 text-[10px] uppercase tracking-widest italic">© {{ new Date().getFullYear() }} Yundu Chen</div>
                 </footer>
             </div>
 
             <!-- VIEW: PROJECT DETAIL -->
             <div v-else-if="currentProject" key="detail" class="min-h-screen">
-                <!-- Info Page (Page 1) -->
                 <section class="py-20 md:py-24 px-6 md:px-32 max-w-7xl mx-auto">
                     <div class="mb-16">
                         <span class="detail-label">Case Study</span>
-                        <h1 class="font-display text-2xl md:text-4xl font-black text-mist tracking-tighter leading-[1.1] mb-8 max-w-5xl uppercase">
-                            {{ currentProject.name }}
-                        </h1>
+                        <h1 class="font-display text-2xl md:text-4xl font-black text-mist tracking-tighter leading-[1.1] mb-8 max-w-5xl uppercase">{{ currentProject.name }}</h1>
                         <div class="flex flex-wrap items-center gap-x-12 gap-y-6 pt-6 border-t border-white/10">
-                            <div v-if="currentProject.details.role">
-                                <span class="detail-label opacity-40 mb-1">Role</span>
-                                <p class="text-mist text-[11px] font-bold uppercase">{{ currentProject.details.role }}</p>
-                            </div>
-                            <div v-if="currentProject.details.year">
-                                <span class="detail-label opacity-40 mb-1">Year</span>
-                                <p class="text-mist text-[11px] font-bold">{{ currentProject.details.year }}</p>
-                            </div>
+                            <div v-if="currentProject.details.role"><span class="detail-label opacity-40 mb-1">Role</span><p class="text-mist text-[11px] font-bold uppercase">{{ currentProject.details.role }}</p></div>
+                            <div v-if="currentProject.details.year"><span class="detail-label opacity-40 mb-1">Year</span><p class="text-mist text-[11px] font-bold">{{ currentProject.details.year }}</p></div>
                             <div class="flex-grow"></div>
-                            <div class="flex gap-2">
-                                <span v-for="tag in currentProject.tags" :key="tag" class="pill-tag border border-acid/20 text-acid bg-acid/5">{{ tag }}</span>
-                            </div>
+                            <div class="flex gap-2"><span v-for="tag in currentProject.tags" :key="tag" class="pill-tag border border-acid/20 text-acid bg-acid/5">{{ tag }}</span></div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-12 items-start">
-                        
-                        <!-- 第一行：Context & Strategy -->
-                        <div v-if="currentProject.details.context">
-                            <span class="detail-label text-acid">Context</span>
-                            <p class="text-gray-300 text-[15px] leading-relaxed italic border-l-2 border-acid/30 pl-6">{{ currentProject.details.context }}</p>
-                        </div>
-                        <div v-if="currentProject.details.strategy">
-                            <span class="detail-label text-acid">Strategy / Approach</span>
-                            <p class="text-gray-400 text-[14px] leading-loose whitespace-pre-line">{{ currentProject.details.strategy }}</p>
-                        </div>
+                        <div v-if="currentProject.details.context"><span class="detail-label text-acid">Context</span><p class="text-gray-300 text-[15px] leading-relaxed italic border-l-2 border-acid/30 pl-6">{{ currentProject.details.context }}</p></div>
+                        <div v-if="currentProject.details.strategy"><span class="detail-label text-acid">Strategy / Approach</span><p class="text-gray-400 text-[14px] leading-loose whitespace-pre-line">{{ currentProject.details.strategy }}</p></div>
                         <div v-else class="hidden md:block"></div>
-
-                        <!-- 第二行：Opportunity/Objective & Solution (强制对齐) -->
-                        <div v-if="currentProject.details.opportunity || currentProject.details.objective">
-                            <span class="detail-label text-acid">{{ currentProject.details.opportunity ? 'Opportunity' : 'Objective' }}</span>
-                            <p class="text-gray-300 text-[15px] leading-relaxed">{{ currentProject.details.opportunity || currentProject.details.objective }}</p>
-                        </div>
-                        <div v-if="currentProject.details.solution">
-                            <span class="detail-label text-acid">Solution</span>
-                            <p class="text-gray-400 text-[14px] leading-loose whitespace-pre-line">{{ currentProject.details.solution }}</p>
-                        </div>
+                        <div v-if="currentProject.details.opportunity || currentProject.details.objective"><span class="detail-label text-acid">{{ currentProject.details.opportunity ? 'Opportunity' : 'Objective' }}</span><p class="text-gray-300 text-[15px] leading-relaxed">{{ currentProject.details.opportunity || currentProject.details.objective }}</p></div>
+                        <div v-if="currentProject.details.solution"><span class="detail-label text-acid">Solution</span><p class="text-gray-400 text-[14px] leading-loose whitespace-pre-line">{{ currentProject.details.solution }}</p></div>
                         <div v-else class="hidden md:block"></div>
-
-                        <!-- 影响力板块 -->
-                        <div v-if="currentProject.details.impact" class="md:col-span-2 bg-white/[0.02] p-8 md:p-12 rounded-2xl border border-glassBorder mt-4">
-                            <span class="detail-label">Outcome & Impact</span>
-                            <p class="text-gray-200 text-[15px] leading-relaxed max-w-4xl whitespace-pre-line">{{ currentProject.details.impact }}</p>
-                        </div>
+                        <div v-if="currentProject.details.impact" class="md:col-span-2 bg-white/[0.02] p-8 md:p-12 rounded-2xl border border-glassBorder mt-4"><span class="detail-label">Outcome & Impact</span><p class="text-gray-200 text-[15px] leading-relaxed max-w-4xl whitespace-pre-line">{{ currentProject.details.impact }}</p></div>
                     </div>
                 </section>
 
-                <!-- Seamless Gallery (8 Slots) -->
-                <section class="visual-gallery">
+                <!-- CUSTOM SECTION: STAR RETROCESSION CONSTELLATION GARDEN -->
+                <div v-if="currentProject.id === 'star-retro'" class="w-full">
+                    <!-- Part 1: Black Background -->
+                    <section class="section-dark-star min-h-screen flex flex-col items-start">
+                        <h1 class="cursive-font text-5xl md:text-7xl mb-12 leading-tight tracking-wide">CONSTELLATION<br>GARDEN</h1>
+                        <div class="w-full max-w-lg mx-auto mb-16 video-container">
+                            <video autoplay loop muted playsinline><source src="https://res.cloudinary.com/dhonki8qe/video/upload/v1770424834/star01_ibhq7a.mp4" type="video/mp4"></video>
+                        </div>
+                        <div class="max-w-4xl mx-auto mb-24 text-center">
+                            <p class="main-text-star opacity-90">The Twenty-Eight Mansions are twenty-eight star regions divided by ancient Chinese astronomers for observing the movements of the sun, moon, and five planets. They consist of seven mansions each for the Azure Dragon in the East, the Vermilion Bird in the South, the White Tiger in the West, and the Black Tortoise in the North.</p>
+                        </div>
+                        <div class="w-full flex flex-col md:flex-row gap-8 mb-24 items-start px-10">
+                            <div class="md:w-1/2">
+                                <p class="main-text-star text-xs mb-6 opacity-80">The phrase "stars return" originally referred to the stars returning to their original positions,<br>signifying the end of the year.</p>
+                                <div class="video-p2-container"><video autoplay loop muted playsinline><source src="https://res.cloudinary.com/dhonki8qe/video/upload/v1770424887/star02_fkzjrq.mp4" type="video/mp4"></video></div>
+                            </div>
+                        </div>
+                        <div class="w-full flex flex-col md:flex-row justify-between items-end mt-auto px-10">
+                            <div class="mb-8 md:mb-0"><p class="main-text-star text-xs opacity-70">The logo combines<br>star graphics<br>and<br>flowers.</p></div>
+                            <div class="flex items-center gap-0 mr-[-10px] md:mr-0"> 
+                                <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770424975/star03_av2qdh.png" alt="Logo Graphic" class="h-32 md:h-56 object-contain">
+                                <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770424986/star04_brc37i.png" alt="Logo Icon" class="h-20 md:h-32 object-contain">
+                            </div>
+                        </div>
+                    </section>
+                    <!-- Part 2: White Background -->
+                    <section class="section-light-star">
+                        <div class="absolute right-10 top-10 text-right"><p class="main-text-star text-sm italic">romantic and dreamlike<br>starry garden</p></div>
+                        <div class="flex items-center pt-24 pb-12 w-full">
+                            <div class="planet-crop"><video autoplay loop muted playsinline><source src="https://res.cloudinary.com/dhonki8qe/video/upload/v1770424995/star05_j1dndk.mp4" type="video/mp4"></video></div>
+                            <div class="w-1/2 md:w-1/2 ml-auto mr-12 video-container"><video autoplay loop muted playsinline><source src="https://res.cloudinary.com/dhonki8qe/video/upload/v1770424999/star06_rqlklo.mp4" type="video/mp4"></video></div>
+                        </div>
+                        <div class="text-right px-10 mb-12"><p class="main-text-star text-sm">blue sky<br>sunrise</p></div>
+                        <div class="w-screen relative left-1/2 -translate-x-1/2 video-container">
+                            <video autoplay loop muted playsinline class="w-full"><source src="https://res.cloudinary.com/dhonki8qe/video/upload/v1770425013/star07_yjp74m.mp4" type="video/mp4"></video>
+                        </div>
+                        <!-- Interactive Parallax Section -->
+                        <div class="interactive-container-star" id="logoContainer">
+                            <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770425084/star08_evv2ub.jpg" class="base-image-star" alt="Background">
+                            <div class="overlay-video-p9-star" id="p9Video"><video autoplay loop muted playsinline><source src="https://res.cloudinary.com/dhonki8qe/video/upload/v1770425093/star09_lzjheb.mp4" type="video/mp4"></video></div>
+                            <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770428685/oxayh4.tif_4x_2_bqmseg.png" class="floating-logo-star" id="shakingLogo" alt="Floating Logo">
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Default Gallery for other projects -->
+                <section v-else class="visual-gallery">
                     <div v-for="(img, index) in currentProject.gallery" :key="index" class="visual-slot">
-                        <img v-if="img" :src="img" alt="Project Documentation">
+                        <img v-if="img" :src="img" alt="Documentation">
                         <div v-else class="w-full h-full bg-[#080808] flex items-center justify-center border-y border-white/[0.02]"><span class="text-[8px] text-white/5 tracking-[0.8em] uppercase">Visual Artifact 0{{ index + 1 }}</span></div>
                     </div>
                 </section>
@@ -328,7 +360,6 @@
     <!-- Scripts -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
     <script>
         const profileData = {
@@ -337,112 +368,39 @@
                 name: "Yundu Chen",
                 whoAmI: "I am a multidisciplinary designer bridging Strategic Service Design and Visual Creativity. I combine the logic of a strategist with the eye of an artist to create work that works.",
                 whatIDoTags: ["Service & System Design", "User Experience", "Branding & Identity", "Visual Storytelling"],
-                background: "Based in London. Currently at RCA. Delivering creative strategies for Tesco, Red Cross, and WWF."
+                background: "Based in London. RCA."
             },
+            partners: ["TESCO", "RED CROSS", "WWF"],
             contact: { email: "cydudyc.823@gmail.com" },
-            
             projects: [
-                // --- SERVICE DESIGN PROJECTS ---
-                { 
-                    id: 'genz-future', name: "GenZ4Good — Designing Future Giving", category: "Service", tags: ["Service Design", "Strategy"],
-                    cardImg: "https://raw.githubusercontent.com/cyduuudyc823-arch/cyd/main/future_1.gif", 
-                    details: {
-                        role: "Researcher · Strategy · Lead", year: "2025",
-                        context: "Charities face declining donor engagement and distrust. Traditional models fail to resonate with Gen Z.",
-                        opportunity: "How might charities shift from fundraising to relationship-based engagement?",
-                        strategy: "Key insight: 👉 Young people engage more through communities than institutions.",
-                        solution: "A charity–community collaboration framework.",
-                        impact: "Moves engagement from one-off donations to ongoing participation."
-                    },
-                    gallery: ["https://raw.githubusercontent.com/cyduuudyc823-arch/cyd/main/future_1.gif", "", "", "", "", "", "", ""]
-                },
-                { 
-                    id: 'tesco-clubcard', name: "Tesco Clubcard — Service Ecosystem Analysis", category: "Service", tags: ["Ecosystem", "Loyalty"],
-                    cardImg: "", 
-                    details: { role: "Researcher", year: "2025", context: "Tesco Clubcard transformed retail loyalty using customer data to create personalised value exchanges.", objective: "Understand why Clubcard succeeds as a service ecosystem beyond points and discounts.", strategy: "Loyalty emerges from perceived fairness. Behavioral nudges integrated into daily routines.", impact: "Service blueprint highlighting behavioural design mechanisms." },
-                    gallery: ["", "", "", "", "", "", "", ""] 
-                },
-                { 
-                    id: 'cat-aid', name: "Paw-to-Paw Cat — Mutual Aid Infrastructure", category: "Service", tags: ["Healthcare", "Pet"],
-                    cardImg: "", 
-                    details: { year: "2023", context: "Rapid pet ownership growth in China increased demand for blood transfusions. Unregulated markets lead to risks.", opportunity: "Design a trusted ecosystem for peer-based animal blood donation.", solution: "A hybrid service model: Matching platform, volunteer network, and public installations.", impact: "Introduces trust mechanisms into informal care networks." },
-                    gallery: ["", "", "", "", "", "", "", ""] 
-                },
-                { 
-                    id: 'urban-futures', name: "Co-Vision Chess — Participatory Urban Futures", category: "Service", tags: ["Participatory", "Civic"],
-                    cardImg: "", 
-                    details: { year: "2023", context: "Urban planning in China often lacks citizen participation, resulting in disengagement.", opportunity: "Enable residents to actively shape future development conversations.", solution: "Speculative platform combining physical toolkits, AI, and digital gameplay.", impact: "Translates abstract concepts into tangible experiences." },
-                    gallery: ["", "", "", "", "", "", "", ""] 
-                },
-                { 
-                    id: 'doggo-go', name: "Doggo Go — Community-Based Pet Care", category: "Service", tags: ["Pet Care", "Community"],
-                    cardImg: "", 
-                    details: { year: "2023", context: "Modern lifestyles create gaps between pet care needs and owner availability.", opportunity: "Design flexible support systems enabling shared responsibility.", solution: "Mobile platform facilitating trusted local assistance and coordinated care routines." },
-                    gallery: ["", "", "", "", "", "", "", ""] 
-                },
-
-                // --- VISUAL DESIGN PROJECTS ---
-                { 
-                    id: 'i-me-ai', 
-                    name: "I, Me — Designing Intimacy in the Age of AI", 
-                    category: "Visual", 
-                    tags: ["Speculative", "AI Ethics", "Editorial"],
-                    cardImg: "", 
-                    details: {
-                        role: "Speculative Service Design · Critical Design · Editorial System · Book Design & Editorial",
-                        year: "2025",
-                        context: "As AI moves beyond functional tools into emotional domains, new forms of human–AI intimacy are emerging.",
-                        opportunity: "How might AI reshape human intimacy, identity, and emotional dependence?",
-                        strategy: "Adopting speculative design and narrative world-building to examine ethical implications.",
-                        solution: "A fictional AI intimacy company presented through a designed publication.",
-                        impact: "Translates complex philosophical inquiry into tangible artefacts."
-                    },
-                    gallery: ["", "", "", "", "", "", "", ""] 
-                },
+                { id: 'genz-future', name: "GenZ4Good — Designing Future Giving", category: "Service", tags: ["Service Design", "Strategy"], cardImg: "https://raw.githubusercontent.com/cyduuuudyc823-arch/cyd/main/future_1.gif", details: { role: "Researcher · Strategy · Lead", year: "2025", context: "Charities face declining donor engagement.", strategy: "Community collaboration framework.", impact: "Moves from donations to participation." }, gallery: ["https://raw.githubusercontent.com/cyduuuudyc823-arch/cyd/main/future_1.gif", "", "", "", "", "", "", ""] },
+                { id: 'tesco-clubcard', name: "Tesco Clubcard — Ecosystem Analysis", category: "Service", tags: ["Ecosystem"], details: { year: "2025", context: "Retail loyalty ecosystem analysis." }, gallery: ["", "", "", "", "", "", "", ""] },
+                { id: 'cat-aid', name: "Paw-to-Paw Cat — Mutual Aid", category: "Service", tags: ["Pet"], details: { year: "2023", context: "Trusted pet medical infrastructure." }, gallery: ["", "", "", "", "", "", "", ""] },
+                { id: 'urban-futures', name: "Co-Vision Chess — Participatory Urban", category: "Service", tags: ["Civic"], details: { year: "2024", context: "Citizen-led urban planning." }, gallery: ["", "", "", "", "", "", "", ""] },
+                { id: 'doggo-go', name: "Doggo Go — Community Care", category: "Service", tags: ["Pet Care"], details: { year: "2023", context: "Shared pet responsibility platform." }, gallery: ["", "", "", "", "", "", "", ""] },
+                { id: 'i-me-ai', name: "I, Me — AI Intimacy Design", category: "Visual", tags: ["Speculative"], details: { year: "2025", context: "Speculative intimacy in AI era." }, gallery: ["", "", "", "", "", "", "", ""] },
                 { 
                     id: 'star-retro', name: "Star Retrocession — Traditional Cosmology", category: "Visual", tags: ["UI", "3D", "Heritage"],
-                    cardImg: "https://raw.githubusercontent.com/cyduuuudyc823-arch/cyd/main/image_95525c.jpg", 
+                    cardImg: "https://res.cloudinary.com/dhonki8qe/video/upload/v1770425013/star07_yjp74m.mp4",
                     details: { year: "2024", context: "A cultural innovation project reinterpreting the traditional Chinese 28 Lunar Mansions through interactive digital media.", opportunity: "Reinterpret ancient star systems through digital interaction.", strategy: "A digital “constellation garden”: 3D botanical forms translated from celestial structures.", impact: "Bridges cultural heritage with modern aesthetics." },
-                    gallery: ["", "", "", "", "", "", "", ""]
+                    gallery: [] // Custom Star Retro section
                 },
-                { 
-                    id: 'zhicha', name: "Zhicha — Wellness Focused Tea Brand", category: "Visual", tags: ["Branding", "VI"],
-                    cardImg: "", 
-                    details: { year: "2025", context: "Zhicha is a wellness-focused milk tea brand inspired by traditional Chinese herbal culture.", solution: "Brand identity merging traditional cloud motifs with contemporary minimal aesthetics." },
-                    gallery: ["", "", "", "", "", "", "", ""] 
-                },
-                { 
-                    id: 'beicangmen', name: "Beicangmen Art District — Wayfinding", category: "Visual", tags: ["Signage", "Navigation"],
-                    cardImg: "", 
-                    details: { year: "2024", context: "Former silk warehouse turned art district lacks visibility and coherent navigation.", strategy: "Rebuild spatial identity through thread-inspired environmental graphics.", impact: "Strengthens place identity while improving usability." },
-                    gallery: ["", "", "", "", "", "", "", ""] 
-                },
-                { 
-                    id: 'full-luck', name: "Full Luck Design — Cultural Innovation", category: "Visual", tags: ["Product", "Packaging"],
-                    cardImg: "", 
-                    details: { year: "2024", context: "Huishan clay figurines are a traditional folk art with 400 years of history.", solution: "Contemporary playing card system translating heritage characters into narratives.", strategy: "Integrated pun-based branding: “服了” (concede) ↔ “福了” (blessing)." },
-                    gallery: ["", "", "", "", "", "", "", ""] 
-                },
-                { 
-                    id: 'share-bite', name: "Share a Bite — Shared Kitchen Service", category: "Visual", tags: ["Branding", "Space"],
-                    cardImg: "", 
-                    details: { year: "2024", context: "University students seek flexible cooking spaces but face safety constraints.", solution: "Shared kitchen model combining safe facilities, social dining, and affordable gathering." },
-                    gallery: ["", "", "", "", "", "", "", ""] 
-                }
-            ],
-            partners: ["TESCO", "RED CROSS", "WWF"],
-            skills: ["Service Design", "Strategy", "UX/UI", "3D Modeling", "Branding", "Figma", "GSAP", "Vue"]
+                { id: 'zhicha', name: "Zhicha — Wellness Tea Brand", category: "Visual", tags: ["Branding"], details: { year: "2025", context: "Inspired by traditional herbal culture." }, gallery: ["", "", "", "", "", "", "", ""] },
+                { id: 'beicangmen', name: "Beicangmen Art District — Wayfinding", category: "Visual", tags: ["Signage"], details: { year: "2024", context: "Environmental navigation system." }, gallery: ["", "", "", "", "", "", "", ""] },
+                { id: 'full-luck', name: "Full Luck Design", category: "Visual", tags: ["Product"], details: { year: "2024", context: "Traditional figurine cultural innovation." }, gallery: ["", "", "", "", "", "", "", ""] },
+                { id: 'share-bite', name: "Share a Bite — Shared Kitchen", category: "Visual", tags: ["Branding"], details: { year: "2024", context: "Shared kitchen service identity." }, gallery: ["", "", "", "", "", "", "", ""] }
+            ]
         };
 
-        const { createApp, ref, onMounted, nextTick, computed } = Vue;
+        const { createApp, ref, onMounted, nextTick, computed, watch } = Vue;
 
         createApp({
             setup() {
                 const profile = ref(profileData);
                 const cursorDot = ref(null);
                 const cursorOutline = ref(null);
-                const focusedProject = ref(null);
                 const currentView = ref('home');
+                const focusedProject = ref(null);
 
                 const cursorHover = () => document.body.classList.add('hovering');
                 const cursorLeave = () => document.body.classList.remove('hovering');
@@ -456,14 +414,12 @@
                     return list[index] || null;
                 };
 
-                const scrollToTop = () => {
-                    if (currentView.value !== 'home') {
-                        currentView.value = 'home';
-                        nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
-                    } else {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
+                const setView = (view) => {
+                    currentView.value = view;
+                    nextTick(() => window.scrollTo(0, 0));
                 };
+
+                const scrollToTop = () => setView('home');
 
                 const handleNavClick = (target) => {
                     if (target === 'about') scrollToTop();
@@ -481,17 +437,46 @@
                     }
                 };
 
-                const setView = (view, anchor = null) => {
-                    currentView.value = view;
-                    nextTick(() => {
-                        if (view === 'home' && anchor) {
-                            const el = document.querySelector(anchor);
-                            if (el) el.scrollIntoView({ behavior: 'smooth' });
-                        } else {
-                            window.scrollTo(0, 0);
-                        }
-                    });
+                // Parallax effect for Star Retrocession
+                const initStarRetroParallax = () => {
+                    const container = document.getElementById('logoContainer');
+                    const logo = document.getElementById('shakingLogo');
+                    const video9 = document.getElementById('p9Video');
+
+                    if (!container || !logo || !video9) return;
+
+                    const handleMove = (e) => {
+                        const rect = container.getBoundingClientRect();
+                        const mouseX = (e.clientX - rect.left) / rect.width - 0.5;
+                        const mouseY = (e.clientY - rect.top) / rect.height - 0.5;
+
+                        logo.style.transform = `translate(${mouseX * 60}px, ${mouseY * 60}px)`;
+                        video9.style.transform = `translate(${mouseX * 30}px, ${mouseY * 30}px)`;
+                    };
+
+                    const handleLeave = () => {
+                        const restore = 'transform 0.5s ease-out';
+                        logo.style.transition = restore;
+                        video9.style.transition = restore;
+                        logo.style.transform = 'translate(0, 0)';
+                        video9.style.transform = 'translate(0, 0)';
+                        
+                        setTimeout(() => {
+                            logo.style.transition = 'transform 0.1s ease-out';
+                            video9.style.transition = 'transform 0.15s ease-out';
+                        }, 500);
+                    };
+
+                    container.addEventListener('mousemove', handleMove);
+                    container.addEventListener('mouseleave', handleLeave);
                 };
+
+                // Watch view changes to re-init special parallax
+                watch(currentView, (val) => {
+                    if (val === 'star-retro') {
+                        nextTick(initStarRetroParallax);
+                    }
+                });
 
                 onMounted(() => {
                     window.addEventListener("mousemove", (e) => {
