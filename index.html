@@ -109,11 +109,7 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
             transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .project-preview-box img, .project-preview-box video { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-        }
+        .project-preview-box img, .project-preview-box video { width: 100%; height: 100%; object-fit: cover; }
         .project-title-container { min-height: 3.5rem; margin-top: 1rem; margin-bottom: 0.5rem; }
 
         .category-header { font-weight: 900; letter-spacing: 0.4em; color: #CCFF00; }
@@ -163,6 +159,54 @@
         }
         .overlay-video-p9-star video { width: 100%; height: 100%; object-fit: cover; }
 
+        /* --- GENZ4GOOD SWISS STYLE SPECIFIC --- */
+        :root {
+            --genz-blue: #029CE5;
+            --genz-yellow: #FEE879;
+            --genz-light-gray: #EFEFEF;
+        }
+
+        .swiss-content-wrapper {
+            background-color: var(--genz-light-gray);
+            color: #000;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+        }
+
+        .swiss-grid-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px;
+            pointer-events: none; z-index: 1; opacity: 0.03;
+        }
+        .swiss-grid-overlay div { background: #000; height: 100%; }
+
+        .hard-shadow { box-shadow: 8px 8px 0px #000; border: 2px solid #000; }
+        .hard-shadow-sm { box-shadow: 4px 4px 0px #000; border: 1.5px solid #000; }
+
+        .vertical-text-genz {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-weight: 900;
+            text-transform: uppercase;
+            line-height: 0.8;
+            user-select: none;
+        }
+
+        .genz-tag {
+            background: #000; color: #fff;
+            padding: 2px 8px; font-size: 0.75rem;
+            font-weight: 700; display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .rotate-slight { transform: rotate(-1deg); }
+        .rotate-reverse { transform: rotate(1.5deg); }
+
+        .content-block-swiss { background: #fff; padding: 3rem; position: relative; }
+        .blue-text { color: var(--genz-blue); }
+        .yellow-bg { background-color: var(--genz-yellow); }
+        .blue-bg { background-color: var(--genz-blue); color: #fff; }
+
         @media (max-width: 1024px) {
             .overlay-video-p9-star { bottom: 20%; width: 20%; left: 8%; }
         }
@@ -173,6 +217,7 @@
             .video-p2-container { width: 240px; height: 180px; }
             .floating-logo-star { width: 30%; top: calc(15% + 4.0cm); left: calc(10% - 1.3cm); }
             .overlay-video-p9-star { width: 35%; left: 5%; bottom: 15%; }
+            .content-block-swiss { padding: 1.5rem; }
         }
     </style>
 </head>
@@ -234,10 +279,13 @@
                                  :class="{'opacity-20': focusedProject && focusedProject !== getProjectByRow('Service', rowIndex-1).id}"
                                  @mouseenter="focusedProject = getProjectByRow('Service', rowIndex-1).id; cursorHover()" @mouseleave="cursorLeave">
                                 <div class="project-preview-box">
-                                    <video v-if="getProjectByRow('Service', rowIndex-1).cardImg?.endsWith('.mp4')" 
-                                           :src="getProjectByRow('Service', rowIndex-1).cardImg" 
-                                           autoplay muted loop playsinline class="grayscale group-hover:grayscale-0 transition-all duration-1000"></video>
-                                    <img v-else :src="getProjectByRow('Service', rowIndex-1).cardImg || 'https://via.placeholder.com/1728x1117/0a0a0a/0a0a0a?text=+'" class="grayscale group-hover:grayscale-0 transition-all duration-1000">
+                                    <video v-if="getProjectByRow('Service', rowIndex-1).cardImg && getProjectByRow('Service', rowIndex-1).cardImg.endsWith('.mp4')" 
+                                           autoplay loop muted playsinline 
+                                           class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000">
+                                        <source :src="getProjectByRow('Service', rowIndex-1).cardImg" type="video/mp4">
+                                    </video>
+                                    <img v-else :src="getProjectByRow('Service', rowIndex-1).cardImg || 'https://via.placeholder.com/1728x1117/0a0a0a/0a0a0a?text=+'" 
+                                         class="grayscale group-hover:grayscale-0 transition-all duration-1000">
                                 </div>
                                 <div class="project-title-container"><h3 class="font-display text-xl md:text-2xl font-bold text-mist group-hover:text-acid transition-colors leading-tight">{{ getProjectByRow('Service', rowIndex-1).name }}</h3></div>
                                 <div class="flex flex-wrap gap-2 pt-1"><span v-for="tag in getProjectByRow('Service', rowIndex-1).tags" :key="tag" class="pill-tag">{{ tag }}</span></div>
@@ -251,10 +299,13 @@
                                  :class="{'opacity-20': focusedProject && focusedProject !== getProjectByRow('Visual', rowIndex-1).id}"
                                  @mouseenter="focusedProject = getProjectByRow('Visual', rowIndex-1).id; cursorHover()" @mouseleave="cursorLeave">
                                 <div class="project-preview-box">
-                                    <video v-if="getProjectByRow('Visual', rowIndex-1).cardImg?.endsWith('.mp4')" 
-                                           :src="getProjectByRow('Visual', rowIndex-1).cardImg" 
-                                           autoplay muted loop playsinline class="grayscale group-hover:grayscale-0 transition-all duration-1000"></video>
-                                    <img v-else :src="getProjectByRow('Visual', rowIndex-1).cardImg || 'https://via.placeholder.com/1728x1117/0a0a0a/0a0a0a?text=+'" class="grayscale group-hover:grayscale-0 transition-all duration-1000">
+                                    <video v-if="getProjectByRow('Visual', rowIndex-1).cardImg && getProjectByRow('Visual', rowIndex-1).cardImg.endsWith('.mp4')" 
+                                           autoplay loop muted playsinline 
+                                           class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000">
+                                        <source :src="getProjectByRow('Visual', rowIndex-1).cardImg" type="video/mp4">
+                                    </video>
+                                    <img v-else :src="getProjectByRow('Visual', rowIndex-1).cardImg || 'https://via.placeholder.com/1728x1117/0a0a0a/0a0a0a?text=+'" 
+                                         class="grayscale group-hover:grayscale-0 transition-all duration-1000">
                                 </div>
                                 <div class="project-title-container"><h3 class="font-display text-xl md:text-2xl font-bold text-mist group-hover:text-acid transition-colors leading-tight">{{ getProjectByRow('Visual', rowIndex-1).name }}</h3></div>
                                 <div class="flex flex-wrap gap-2 pt-1"><span v-for="tag in getProjectByRow('Visual', rowIndex-1).tags" :key="tag" class="pill-tag">{{ tag }}</span></div>
@@ -287,10 +338,10 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-12 items-start">
-                        <div v-if="currentProject.details.context"><span class="detail-label text-acid">Context</span><p class="text-gray-300 text-[15px] leading-relaxed italic border-l-2 border-acid/30 pl-6">{{ currentProject.details.context }}</p></div>
+                        <div v-if="currentProject.details.context"><span class="detail-label text-acid">Context</span><p class="text-gray-300 text-[15px] leading-relaxed italic border-l-2 border-acid/30 pl-6 whitespace-pre-line">{{ currentProject.details.context }}</p></div>
                         <div v-if="currentProject.details.strategy"><span class="detail-label text-acid">Strategy / Approach</span><p class="text-gray-400 text-[14px] leading-loose whitespace-pre-line">{{ currentProject.details.strategy }}</p></div>
                         <div v-else class="hidden md:block"></div>
-                        <div v-if="currentProject.details.opportunity || currentProject.details.objective"><span class="detail-label text-acid">{{ currentProject.details.opportunity ? 'Opportunity' : 'Objective' }}</span><p class="text-gray-300 text-[15px] leading-relaxed">{{ currentProject.details.opportunity || currentProject.details.objective }}</p></div>
+                        <div v-if="currentProject.details.opportunity || currentProject.details.objective"><span class="detail-label text-acid">{{ currentProject.details.opportunity ? 'Opportunity' : 'Objective' }}</span><p class="text-gray-300 text-[15px] leading-relaxed whitespace-pre-line">{{ currentProject.details.opportunity || currentProject.details.objective }}</p></div>
                         <div v-if="currentProject.details.solution"><span class="detail-label text-acid">Solution</span><p class="text-gray-400 text-[14px] leading-loose whitespace-pre-line">{{ currentProject.details.solution }}</p></div>
                         <div v-else class="hidden md:block"></div>
                         <div v-if="currentProject.details.impact" class="md:col-span-2 bg-white/[0.02] p-8 md:p-12 rounded-2xl border border-glassBorder mt-4"><span class="detail-label">Outcome & Impact</span><p class="text-gray-200 text-[15px] leading-relaxed max-w-4xl whitespace-pre-line">{{ currentProject.details.impact }}</p></div>
@@ -342,6 +393,232 @@
                     </section>
                 </div>
 
+                <!-- CUSTOM SECTION: GENZ4GOOD SWISS STYLE -->
+                <div v-else-if="currentProject.id === 'genz-future'" class="w-full swiss-content-wrapper">
+                    <div class="swiss-grid-overlay">
+                        <div></div><div></div><div></div><div></div><div></div><div></div>
+                        <div></div><div></div><div></div><div></div><div></div><div></div>
+                    </div>
+
+                    <!-- Background Vertical Text decoration -->
+                    <div class="fixed right-4 top-24 vertical-text-genz text-[15vh] opacity-10 pointer-events-none z-10">
+                        GENZ4GOOD
+                    </div>
+
+                    <main class="max-w-7xl mx-auto space-y-24 px-4 md:px-8 py-24 relative z-20">
+                        <!-- SECTION 1: PROBLEM CONTEXT -->
+                        <section class="grid grid-cols-12 gap-6 items-start">
+                            <div class="col-span-12 lg:col-span-8 content-block-swiss hard-shadow rotate-slight">
+                                <div class="genz-tag">01 / CONTEXT</div>
+                                <h2 class="text-6xl font-black uppercase leading-none mb-6">PROBLEM<br><span class="blue-text">CONTEXT</span></h2>
+                                <div class="mt-8">
+                                    <h3 class="text-2xl font-bold uppercase border-b-2 border-black pb-2">Background</h3>
+                                    <p class="text-xl font-bold mt-4 leading-tight">Charities face declining long-term donor engagement and growing distrust, particularly among younger generations. While Gen Z shows strong interest in social impact, traditional donation models fail to resonate with their behaviours and expectations.</p>
+                                </div>
+                                <div class="mt-16 p-6 yellow-bg hard-shadow-sm rotate-reverse">
+                                    <h3 class="text-2xl font-bold uppercase mb-2">Key Question</h3>
+                                    <p class="text-2xl font-black italic">How might charities shift from transactional fundraising to relationship-based engagement that nurtures future giving?</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- SECTION 2: DISCOVERY & INSIGHTS -->
+                        <section class="grid grid-cols-12 gap-6">
+                            <div class="col-span-12 lg:col-span-5 blue-bg content-block-swiss hard-shadow">
+                                <div class="genz-tag bg-white text-black">02 / RESEARCH</div>
+                                <h2 class="text-6xl font-black uppercase leading-none mb-6">DISCOVERY &<br>INSIGHTS</h2>
+                                <div class="mt-12 space-y-8">
+                                    <div>
+                                        <h3 class="text-2xl font-bold uppercase mb-4">Methodology</h3>
+                                        <ul class="list-disc list-inside space-y-1 text-lg">
+                                            <li>Secondary research</li>
+                                            <li>Quantitative survey (42 Gen Z participants)</li>
+                                            <li>In-depth interviews (15 users + 2 charities + 2 communities)</li>
+                                        </ul>
+                                    </div>
+                                    <div class="grid grid-cols-3 gap-4 pt-8 border-t border-white/30">
+                                        <div class="text-center">
+                                            <div class="text-4xl font-black">42</div>
+                                            <div class="text-[10px] uppercase font-bold">Survey</div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="text-4xl font-black">15</div>
+                                            <div class="text-[10px] uppercase font-bold">Intrvw</div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="text-4xl font-black">2+2</div>
+                                            <div class="text-[10px] uppercase font-bold">NGOs</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-span-12 lg:col-span-7 space-y-6">
+                                <div class="bg-white p-4 hard-shadow-sm flex flex-col md:flex-row gap-6 items-center">
+                                    <div class="w-full md:w-1/2">
+                                        <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481522/image_39_yhwxdy.jpg" alt="Survey Data" class="w-full grayscale hover:grayscale-0 transition-all cursor-pointer" onclick="window.open('https://www.dropbox.com/scl/fi/j8jio0dojlte0nhoc12it/_4-1-2026_143442_docs.google.com.pdf?rlkey=em1oj9f8uxn2ldixz1eo66rkt&st=7kne6xld&dl=0')">
+                                    </div>
+                                    <div class="w-full md:w-1/2 text-xs">
+                                        <p class="mb-4 font-bold uppercase">Click image to view full survey data →</p>
+                                        <ul class="space-y-2 opacity-70">
+                                            <li>• I trust and support them</li>
+                                            <li>• I support goals but doubt transparency</li>
+                                            <li>• I feel distant or disconnected</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="content-block-swiss hard-shadow-sm p-6">
+                                        <h4 class="blue-text font-bold uppercase mb-4">Charity Insights</h4>
+                                        <ul class="text-sm space-y-3">
+                                            <li class="flex gap-2 font-bold"><span class="bg-blue-500 text-white px-1">01</span> Monetary & regular giving needs.</li>
+                                            <li class="flex gap-2 font-bold"><span class="bg-blue-500 text-white px-1">02</span> People involvement & recruitment costs.</li>
+                                        </ul>
+                                    </div>
+                                    <div class="content-block-swiss hard-shadow-sm p-6">
+                                        <h4 class="blue-text font-bold uppercase mb-4">Young Adult Reality</h4>
+                                        <div class="text-sm space-y-4">
+                                            <p><strong>Trust Deficit:</strong> Funding flows are a "black box".</p>
+                                            <p><strong>Need for Agency:</strong> Want to contribute skills.</p>
+                                            <p><strong>Peer-driven Trust:</strong> Relying on community networks.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- SECTION 3: OPPORTUNITY -->
+                        <section class="relative py-12">
+                            <div class="blue-bg hard-shadow p-12 lg:p-24 text-center">
+                                <div class="genz-tag bg-white text-black mb-6">03 / OPPORTUNITY</div>
+                                <h2 class="text-5xl md:text-7xl font-black uppercase mb-12">THE OPPORTUNITY</h2>
+                                <p class="text-2xl md:text-3xl max-w-4xl mx-auto font-bold leading-tight uppercase">
+                                    How might charities shift from transactional fundraising to relationship-based engagement that nurtures future giving?
+                                </p>
+                            </div>
+                        </section>
+
+                        <!-- SECTION 4: THE PIVOT -->
+                        <section class="grid grid-cols-12 gap-6 items-center">
+                            <div class="col-span-12 lg:col-span-4 z-10">
+                                <div class="content-block-swiss hard-shadow rotate-slight">
+                                    <div class="genz-tag">STRATEGY</div>
+                                    <h2 class="text-4xl font-black uppercase">STRATEGY<br>PIVOT</h2>
+                                    <div class="mt-6 space-y-4 text-sm">
+                                        <p>Rather than building new platforms, this project explores how existing charity infrastructures can evolve.</p>
+                                        <p class="font-bold blue-text text-base">Key insight:  Young people engage more through communities than institutions.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-span-12 lg:col-span-8 grid grid-cols-2 gap-4">
+                                <div class="bg-black text-white p-8 hard-shadow flex flex-col justify-center">
+                                    <p class="text-sm uppercase mb-4 opacity-50 font-bold">Strategic Shift:</p>
+                                    <p class="text-2xl font-black mb-4 uppercase">Infrastructure Evolution</p>
+                                    <p class="text-3xl font-black text-blue-400 uppercase"> EMPOWER EXISTING COMMUNITIES.</p>
+                                    <p class="mt-8 text-[10px] tracking-widest opacity-50 font-bold">ECOSYSTEM ACTIVATION</p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481243/IMG_9667_1_it7kov.jpg" class="w-full h-full object-cover hard-shadow-sm grayscale hover:grayscale-0 transition-all">
+                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481242/IMG_9666_1_msftsz.jpg" class="w-full h-full object-cover hard-shadow-sm grayscale hover:grayscale-0 transition-all">
+                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481233/A4_-_1_ulv24c.png" class="w-full h-full object-cover hard-shadow-sm grayscale hover:grayscale-0 transition-all">
+                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481233/A4_-_3_nuqsdv.png" class="w-full h-full object-cover hard-shadow-sm grayscale hover:grayscale-0 transition-all">
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- SECTION 5: SOLUTION SYSTEM -->
+                        <section class="space-y-12">
+                            <div class="text-center">
+                                <h2 class="text-6xl font-black uppercase italic">THE <span class="blue-text">SOLUTION</span></h2>
+                                <p class="max-w-4xl mx-auto text-xl font-bold border-l-4 border-blue-500 pl-6 text-left mt-8 uppercase">
+                                    A charity–community collaboration framework:
+                                </p>
+                                <ul class="max-w-4xl mx-auto text-left list-none mt-4 space-y-2 text-lg font-medium opacity-80">
+                                    <li class="flex gap-2"><span> Embedded partnership pathways within existing charity websites.</li>
+                                    <li class="flex gap-2"><span> Simplified onboarding for student societies and grassroots communities.</li>
+                                    <li class="flex gap-2"><span> Event-based engagement models that build emotional investment over time.</li>
+                                </ul>
+                            </div>
+                            <div class="bg-white p-4 hard-shadow">
+                                <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770511617/Group_46_bhlqot.jpg" alt="Collaboration Model Diagram" class="w-full">
+                            </div>
+                            <div class="grid grid-cols-12 gap-10 mt-20 items-stretch">
+                                <div class="col-span-12 md:col-span-8 flex flex-col">
+                                    <div class="bg-white p-10 hard-shadow h-full flex items-center justify-center">
+                                        <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481925/Group_63_jmhcnm.jpg" alt="Cycle" class="w-full h-auto object-contain">
+                                    </div>
+                                    <div class="mt-4 border-l-4 border-black pl-4">
+                                        <p class="text-xs font-black uppercase tracking-tighter">System Loop</p>
+                                        <p class="text-[10px] opacity-50 font-bold uppercase">Building Emotional Connection</p>
+                                    </div>
+                                </div>
+                                <div class="col-span-12 md:col-span-4 flex flex-col">
+                                    <div class="bg-white p-8 hard-shadow-sm h-full flex flex-col justify-center items-center">
+                                        <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481924/Group_62_tsfeyh.jpg" alt="Stakeholder" class="w-full h-auto max-w-[85%]">
+                                    </div>
+                                    <div class="mt-4 bg-black text-white p-3 text-center">
+                                        <p class="text-[10px] font-bold uppercase tracking-widest">Stakeholder Ecosystem</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- SECTION 6: DELIVERABLES & PROTOTYPE -->
+                        <section class="space-y-12">
+                            <h2 class="text-6xl font-black uppercase border-b-4 border-black inline-block">DELIVERABLES</h2>
+                            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                                <div class="lg:col-span-4">
+                                    <h3 class="text-2xl font-bold uppercase mb-4">User Journey</h3>
+                                    <p class="text-sm mb-8">Visualizing the path from first friend sharing to deep engagement and eventual voluntary donation.</p>
+                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770483061/unnamed_2_1_o4apoe.jpg" class="w-full hard-shadow-sm grayscale hover:grayscale-0 transition-all">
+                                </div>
+                                <div class="lg:col-span-8">
+                                    <h3 class="text-2xl font-bold uppercase mb-4">Prototype Video</h3>
+                                    <div class="hard-shadow bg-black overflow-hidden aspect-video">
+                                        <video controls loop muted playsinline class="w-full h-full">
+                                            <source src="https://res.cloudinary.com/dhonki8qe/video/upload/v1770483477/prototype_gviesy.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- SECTION 7: IMPACT & REFLECTION -->
+                        <section class="grid grid-cols-12 gap-6 pb-24">
+                            <div class="col-span-12 lg:col-span-7 content-block-swiss hard-shadow yellow-bg">
+                                <div class="genz-tag bg-black text-white">07 / IMPACT</div>
+                                <h2 class="text-6xl font-black uppercase mb-6">OUTCOME &<br>IMPACT</h2>
+                                <div class="mt-8 space-y-6">
+                                    <div class="flex gap-4 border-b border-black/10 pb-4">
+                                        <span class="text-2xl">⚡</span>
+                                        <p class="text-lg font-bold">Moves charity engagement from one-off donations → ongoing participation.</p>
+                                    </div>
+                                    <div class="flex gap-4 border-b border-black/10 pb-4">
+                                        <span class="text-2xl">⚡</span>
+                                        <p class="text-lg font-bold">Creates scalable collaboration channels between institutions and youth communities.</p>
+                                    </div>
+                                    <div class="flex gap-4 border-b border-black/10 pb-4">
+                                        <span class="text-2xl">⚡</span>
+                                        <p class="text-lg font-bold">Strengthens long-term trust-building mechanisms.</p>
+                                    </div>
+                                </div>
+                                <div class="mt-12 p-6 bg-white hard-shadow-sm">
+                                    <h4 class="blue-text font-bold uppercase">Project Reflection Video</h4>
+                                    <div class="mt-4 aspect-video bg-black">
+                                        <iframe class="w-full h-full" src="https://www.youtube.com/embed/g28FFW2HxCc?rel=0" frameborder="0" allowfullscreen></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-span-12 lg:col-span-5 flex flex-col justify-end">
+                                <div class="p-12 border-4 border-black text-right rotate-reverse bg-white">
+                                    <p class="text-5xl font-black mb-4 italic uppercase">NEXT?</p>
+                                    <p class="text-sm uppercase font-bold tracking-widest">Beyond donation amounts, how can emotional recognition be quantified as long-term brand value?</p>
+                                </div>
+                            </div>
+                        </section>
+                    </main>
+                </div>
+
                 <!-- Default Gallery for other projects -->
                 <section v-else class="visual-gallery">
                     <div v-for="(img, index) in currentProject.gallery" :key="index" class="visual-slot">
@@ -373,7 +650,23 @@
             partners: ["TESCO", "RED CROSS", "WWF"],
             contact: { email: "cydudyc.823@gmail.com" },
             projects: [
-                { id: 'genz-future', name: "GenZ4Good — Designing Future Giving", category: "Service", tags: ["Service Design", "Strategy"], cardImg: "https://raw.githubusercontent.com/cyduuuudyc823-arch/cyd/main/future_1.gif", details: { role: "Researcher · Strategy · Lead", year: "2025", context: "Charities face declining donor engagement.", strategy: "Community collaboration framework.", impact: "Moves from donations to participation." }, gallery: ["https://raw.githubusercontent.com/cyduuuudyc823-arch/cyd/main/future_1.gif", "", "", "", "", "", "", ""] },
+                { 
+                    id: 'genz-future', 
+                    name: "GenZ4Good — Designing Future Giving Models", 
+                    category: "Service", 
+                    tags: ["Service Design", "Strategy"], 
+                    cardImg: "https://res.cloudinary.com/dhonki8qe/image/upload/v1770513210/Frame_3_bkhfu8.jpg", 
+                    details: { 
+                        role: "Service Design Researcher · Strategy Specialist · Prototyping Lead", 
+                        year: "2025", 
+                        context: "Charities face declining long-term donor engagement and growing distrust, particularly among younger generations. While Gen Z shows strong interest in social impact, traditional donation models fail to resonate with their behaviours and expectations.", 
+                        opportunity: "How might charities shift from transactional fundraising to relationship-based engagement that nurtures future giving?\n如何通过社群共创与价值交换，让慈善机构重新赢得年轻一代的信任？",
+                        strategy: "Rather than building new platforms, this project explores how existing charity infrastructures can evolve.\nKey insight:\n👉 Young people engage more through communities than institutions.",
+                        solution: "A charity–community collaboration framework:\nEmbedded partnership pathways within existing charity websites.\nSimplified onboarding for student societies and grassroots communities.\nEvent-based engagement models that build emotional investment over time.",
+                        impact: "Moves charity engagement from one-off donations → ongoing participation.\nCreates scalable collaboration channels between institutions and youth communities.\nStrengthens long-term trust-building mechanisms."
+                    }, 
+                    gallery: [] 
+                },
                 { id: 'tesco-clubcard', name: "Tesco Clubcard — Ecosystem Analysis", category: "Service", tags: ["Ecosystem"], details: { year: "2025", context: "Retail loyalty ecosystem analysis." }, gallery: ["", "", "", "", "", "", "", ""] },
                 { id: 'cat-aid', name: "Paw-to-Paw Cat — Mutual Aid", category: "Service", tags: ["Pet"], details: { year: "2023", context: "Trusted pet medical infrastructure." }, gallery: ["", "", "", "", "", "", "", ""] },
                 { id: 'urban-futures', name: "Co-Vision Chess — Participatory Urban", category: "Service", tags: ["Civic"], details: { year: "2024", context: "Citizen-led urban planning." }, gallery: ["", "", "", "", "", "", "", ""] },
@@ -383,7 +676,7 @@
                     id: 'star-retro', name: "Star Retrocession — Traditional Cosmology", category: "Visual", tags: ["UI", "3D", "Heritage"],
                     cardImg: "https://res.cloudinary.com/dhonki8qe/video/upload/v1770425013/star07_yjp74m.mp4",
                     details: { year: "2024", context: "A cultural innovation project reinterpreting the traditional Chinese 28 Lunar Mansions through interactive digital media.", opportunity: "Reinterpret ancient star systems through digital interaction.", strategy: "A digital “constellation garden”: 3D botanical forms translated from celestial structures.", impact: "Bridges cultural heritage with modern aesthetics." },
-                    gallery: [] // Custom Star Retro section
+                    gallery: [] // Handled by custom Star Retro section
                 },
                 { id: 'zhicha', name: "Zhicha — Wellness Tea Brand", category: "Visual", tags: ["Branding"], details: { year: "2025", context: "Inspired by traditional herbal culture." }, gallery: ["", "", "", "", "", "", "", ""] },
                 { id: 'beicangmen', name: "Beicangmen Art District — Wayfinding", category: "Visual", tags: ["Signage"], details: { year: "2024", context: "Environmental navigation system." }, gallery: ["", "", "", "", "", "", "", ""] },
@@ -437,7 +730,7 @@
                     }
                 };
 
-                // Parallax effect for Star Retrocession
+                // SPECIAL LOGIC: Parallax effect for Star Retrocession
                 const initStarRetroParallax = () => {
                     const container = document.getElementById('logoContainer');
                     const logo = document.getElementById('shakingLogo');
