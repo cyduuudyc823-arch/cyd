@@ -232,6 +232,29 @@
         .cvc-hmw-card { background-color: var(--cvc-mint); padding: 3rem 2rem; position: relative; }
         .cvc-hmw-tag { background-color: var(--cvc-primary); color: white; padding: 4px 12px; font-weight: 900; font-size: 1.5rem; display: inline-block; margin-bottom: 1.5rem; }
 
+        /* --- BEICANGMEN WAYFINDING SPECIFIC --- */
+        .bc-gallery { width: 100%; display: flex; flex-direction: column; background-color: #fff; }
+        .bc-gallery img { display: block; width: 100%; height: auto; border: 0.1pt solid #000000; }
+        .bc-parallax-container { 
+            width: 100%; 
+            height: 100vh; 
+            overflow: hidden; 
+            border: 0.1pt solid #000000; 
+            position: relative; 
+            line-height: 0; 
+            background-color: #ffffff; 
+            padding-left: 40vw; 
+        }
+        #bc-parallax-img { 
+            display: block; 
+            height: 100vh; 
+            width: auto; 
+            min-width: 180vw; 
+            border: none; 
+            will-change: transform; 
+            transition: transform 0.1s ease-out; 
+        }
+
         @media (max-width: 1024px) {
             .overlay-video-p9-star { bottom: 20%; width: 20%; left: 8%; }
         }
@@ -248,6 +271,7 @@
             .cvc-swiss-grid { display: block; }
             .cvc-vertical-text { writing-mode: horizontal-tb; }
             .cvc-section-title { font-size: 2rem !important; }
+            .bc-parallax-container { padding-left: 10vw; } 
         }
     </style>
 </head>
@@ -548,10 +572,10 @@
                                     <p class="mt-8 text-[10px] tracking-widest opacity-50 font-bold">ECOSYSTEM ACTIVATION</p>
                                 </div>
                                 <div class="grid grid-cols-2 gap-2">
-                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481243/IMG_9667_1_it7kov.jpg" class="w-full h-full object-cover hard-shadow-sm grayscale hover:grayscale-0 transition-all">
-                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481242/IMG_9666_1_msftsz.jpg" class="w-full h-full object-cover hard-shadow-sm grayscale hover:grayscale-0 transition-all">
-                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481233/A4_-_1_ulv24c.png" class="w-full h-full object-cover hard-shadow-sm grayscale hover:grayscale-0 transition-all">
-                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481233/A4_-_3_nuqsdv.png" class="w-full h-full object-cover hard-shadow-sm grayscale hover:grayscale-0 transition-all">
+                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481243/IMG_9667_1_it7kov.jpg" class="w-full h-full object-cover hard-shadow-sm grayscale hover:grayscale-0 transition-all duration-1000">
+                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481242/IMG_9666_1_msftsz.jpg" class="w-full h-full object-cover hard-shadow-sm grayscale hover:grayscale-0 transition-all duration-1000">
+                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481233/A4_-_1_ulv24c.png" class="w-full h-full object-cover hard-shadow-sm grayscale hover:grayscale-0 transition-all duration-1000">
+                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481233/A4_-_3_nuqsdv.png" class="w-full h-full object-cover hard-shadow-sm grayscale hover:grayscale-0 transition-all duration-1000">
                                 </div>
                             </div>
                         </section>
@@ -600,7 +624,7 @@
                                 <div class="lg:col-span-4">
                                     <h3 class="text-2xl font-bold uppercase mb-4">User Journey</h3>
                                     <p class="text-sm mb-8">Visualizing the path from first friend sharing to deep engagement and eventual voluntary donation.</p>
-                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770483061/unnamed_2_1_o4apoe.jpg" class="w-full hard-shadow-sm grayscale hover:grayscale-0 transition-all">
+                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770483061/unnamed_2_1_o4apoe.jpg" class="w-full hard-shadow-sm grayscale hover:grayscale-0 transition-all duration-1000">
                                 </div>
                                 <div class="lg:col-span-8">
                                     <h3 class="text-2xl font-bold uppercase mb-4">Prototype Video</h3>
@@ -1034,6 +1058,26 @@
                     </section>
                 </div>
 
+                <!-- CUSTOM SECTION: BEICANGMEN WAYFINDING GALLERY -->
+                <div v-else-if="currentProject.id === 'beicangmen'" class="w-full bc-gallery pb-24">
+                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772452658/%E7%94%BB%E6%9D%BF_86_6x_zjiui4.png" alt="[作品 1]">
+                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772452658/%E7%94%BB%E6%9D%BF_86_%E5%89%AF%E6%9C%AC_6x_xaptgr.png" alt="[作品 2]">
+                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772451277/%E7%94%BB%E6%9D%BF_86_%E5%89%AF%E6%9C%AC_2_6x_y6kngs.png" alt="[作品 3]">
+                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772451267/%E7%94%BB%E6%9D%BF_86_%E5%89%AF%E6%9C%AC_3_6x_uss8pd.png" alt="[作品 4]">
+                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772451268/%E7%94%BB%E6%9D%BF_86_%E5%89%AF%E6%9C%AC_4_6x_yglqrf.png" alt="[作品 5]">
+                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772451269/%E7%94%BB%E6%9D%BF_86_%E5%89%AF%E6%9C%AC_5_6x_xlrozb.png" alt="[作品 6]">
+                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772451269/%E7%94%BB%E6%9D%BF_86_%E5%89%AF%E6%9C%AC_6_6x_ytwbz4.png" alt="[作品 7]">
+                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772451269/%E7%94%BB%E6%9D%BF_86_%E5%89%AF%E6%9C%AC_7_6x_lvhuhh.png" alt="[作品 8]">
+                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772451268/%E7%94%BB%E6%9D%BF_86_%E5%89%AF%E6%9C%AC_8_6x_mul52y.png" alt="[作品 9]">
+                    
+                    <!-- Parallax Segment -->
+                    <div class="bc-parallax-container" id="bc-parallax-section">
+                        <img id="bc-parallax-img" src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772451494/%E8%B5%84%E6%BA%90_3_2x_vtm72z.png" alt="[视差横移图]">
+                    </div>
+
+                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772451267/%E7%94%BB%E6%9D%BF_86_%E5%89%AF%E6%9C%AC_10_6x_xifw9q.png" alt="[作品 10]">
+                </div>
+
                 <!-- Default Gallery for other projects -->
                 <section v-else class="visual-gallery">
                     <div v-for="(img, index) in currentProject.gallery" :key="index" class="visual-slot">
@@ -1059,7 +1103,7 @@
             hero: {
                 name: "Yundu Chen",
                 whoAmI: "I am a multidisciplinary designer bridging Strategic Service Design and Visual Creativity. I combine the logic of a strategist with the eye of an artist to create work that works.",
-                whatIDoTags: ["Service & System Design", "User Experience", "Branding & Identity", "Visual Storytelling"],
+                 whatIDoTags: ["Service & System Design", "User Experience", "Branding & Identity", "Visual Storytelling"],
                 background: "Based in London. RCA."
             },
             partners: ["TESCO", "RED CROSS", "WWF"],
@@ -1125,13 +1169,24 @@
                     gallery: [] // Handled by custom Star Retro section
                 },
                 { id: 'zhicha', name: "Zhicha — Wellness Tea Brand", category: "Visual", tags: ["Branding"], details: { year: "2025", context: "Inspired by traditional herbal culture." }, gallery: ["", "", "", "", "", "", "", ""] },
-                { id: 'beicangmen', name: "Beicangmen Art District — Wayfinding", category: "Visual", tags: ["Signage"], details: { year: "2024", context: "Environmental navigation system." }, gallery: ["", "", "", "", "", "", "", ""] },
+                { 
+                    id: 'beicangmen', name: "Beicangmen Art District — Wayfinding", category: "Visual", tags: ["Signage"], 
+                    cardImg: "https://res.cloudinary.com/dhonki8qe/image/upload/v1772452658/%E7%94%BB%E6%9D%BF_86_6x_zjiui4.png",
+                    details: { 
+                        year: "2024", 
+                        context: "Former silk warehouse turned art district lacks visibility and coherent navigation.",
+                        strategy: "Rebuild spatial identity through environmental graphics.",
+                        solution: "Thread-inspired visual language referencing historical silk industry. Integrated signage improving visitor journey clarity.",
+                        impact: "Strengthens place identity while improving usability."
+                    }, 
+                    gallery: [] 
+                },
                 { id: 'full-luck', name: "Full Luck Design", category: "Visual", tags: ["Product"], details: { year: "2024", context: "Traditional figurine cultural innovation." }, gallery: ["", "", "", "", "", "", "", ""] },
                 { id: 'share-bite', name: "Share a Bite — Shared Kitchen", category: "Visual", tags: ["Branding"], details: { year: "2024", context: "Shared kitchen service identity." }, gallery: ["", "", "", "", "", "", "", ""] }
             ]
         };
 
-        const { createApp, ref, onMounted, nextTick, computed, watch } = Vue;
+        const { createApp, ref, onMounted, onUnmounted, nextTick, computed, watch } = Vue;
 
         createApp({
             setup() {
@@ -1163,58 +1218,86 @@
                 const handleNavClick = (target) => {
                     if (target === 'about') scrollToTop();
                     else {
+                        const el = document.getElementById(target + '-anchor') || document.getElementById(target);
                         if (currentView.value !== 'home') {
                             currentView.value = 'home';
-                            nextTick(() => {
-                                const el = document.getElementById(target + '-anchor') || document.getElementById(target);
-                                if (el) el.scrollIntoView({ behavior: 'smooth' });
-                            });
+                            nextTick(() => { if (el) el.scrollIntoView({ behavior: 'smooth' }); });
                         } else {
-                            const el = document.getElementById(target + '-anchor') || document.getElementById(target);
                             if (el) el.scrollIntoView({ behavior: 'smooth' });
                         }
                     }
                 };
 
-                // SPECIAL LOGIC: Parallax effect for Star Retrocession
+                // --- INTERACTIVE LOGIC: STAR RETROCESSION ---
                 const initStarRetroParallax = () => {
                     const container = document.getElementById('logoContainer');
                     const logo = document.getElementById('shakingLogo');
                     const video9 = document.getElementById('p9Video');
-
                     if (!container || !logo || !video9) return;
-
                     const handleMove = (e) => {
                         const rect = container.getBoundingClientRect();
                         const mouseX = (e.clientX - rect.left) / rect.width - 0.5;
                         const mouseY = (e.clientY - rect.top) / rect.height - 0.5;
-
                         logo.style.transform = `translate(${mouseX * 60}px, ${mouseY * 60}px)`;
                         video9.style.transform = `translate(${mouseX * 30}px, ${mouseY * 30}px)`;
                     };
-
                     const handleLeave = () => {
-                        const restore = 'transform 0.5s ease-out';
-                        logo.style.transition = restore;
-                        video9.style.transition = restore;
+                        logo.style.transition = 'transform 0.5s ease-out';
+                        video9.style.transition = 'transform 0.5s ease-out';
                         logo.style.transform = 'translate(0, 0)';
                         video9.style.transform = 'translate(0, 0)';
-                        
                         setTimeout(() => {
                             logo.style.transition = 'transform 0.1s ease-out';
                             video9.style.transition = 'transform 0.15s ease-out';
                         }, 500);
                     };
-
                     container.addEventListener('mousemove', handleMove);
                     container.addEventListener('mouseleave', handleLeave);
                 };
 
-                // Watch view changes to re-init special parallax
-                watch(currentView, (val) => {
-                    if (val === 'star-retro') {
-                        nextTick(initStarRetroParallax);
+                // --- INTERACTIVE LOGIC: BEICANGMEN WAYFINDING ---
+                const handleBeicangScroll = () => {
+                    const parallaxSection = document.getElementById('bc-parallax-section');
+                    const parallaxImg = document.getElementById('bc-parallax-img');
+                    if (!parallaxSection || !parallaxImg) return;
+                    
+                    const rect = parallaxSection.getBoundingClientRect();
+                    const viewHeight = window.innerHeight;
+                    
+                    if (rect.top < viewHeight && rect.bottom > 0) {
+                        const scrollRange = viewHeight + rect.height;
+                        const scrollCurrent = viewHeight - rect.top;
+                        const progress = Math.max(0, Math.min(1, scrollCurrent / scrollRange));
+                        
+                        const containerWidth = parallaxSection.offsetWidth;
+                        const paddingLeft = parseFloat(window.getComputedStyle(parallaxSection).paddingLeft);
+                        const imgWidth = parallaxImg.offsetWidth;
+                        
+                        // 最大横移距离：图片宽度减去容器的可视内容宽度
+                        const maxTranslate = imgWidth - (containerWidth - paddingLeft);
+                        
+                        if (maxTranslate > 0) {
+                            const translateX = -(maxTranslate * progress);
+                            parallaxImg.style.transform = `translateX(${translateX}px)`;
+                        }
                     }
+                };
+
+                const initBeicangWayfinding = () => {
+                    window.addEventListener('scroll', handleBeicangScroll);
+                    window.addEventListener('resize', handleBeicangScroll);
+                    nextTick(handleBeicangScroll);
+                };
+
+                const destroyBeicangWayfinding = () => {
+                    window.removeEventListener('scroll', handleBeicangScroll);
+                    window.removeEventListener('resize', handleBeicangScroll);
+                };
+
+                watch(currentView, (val, oldVal) => {
+                    if (oldVal === 'beicangmen') destroyBeicangWayfinding();
+                    if (val === 'star-retro') nextTick(initStarRetroParallax);
+                    if (val === 'beicangmen') nextTick(initBeicangWayfinding);
                 });
 
                 onMounted(() => {
@@ -1225,6 +1308,10 @@
                             gsap.to(cursorOutline.value, { x: e.clientX, y: e.clientY, duration: 0.15 });
                         }
                     });
+                });
+
+                onUnmounted(() => {
+                    destroyBeicangWayfinding();
                 });
 
                 const currentProject = computed(() => profile.value.projects.find(p => p.id === currentView.value));
