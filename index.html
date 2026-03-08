@@ -128,10 +128,10 @@
             transform: translateX(-50%) rotate(45deg); clip-path: polygon(100% 0, 100% 100%, 0 100%); 
         }
 
-        /* Default Gallery Slots */
+        /* Default Gallery Slots - 去掉了强制长宽比，按照图片大小占满 */
         .visual-gallery { display: flex; flex-direction: column; width: 100%; margin: 0; padding: 0; }
-        .visual-slot { width: 100%; aspect-ratio: 1728 / 1117; overflow: hidden; margin: 0; padding: 0; }
-        .visual-slot img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: lighten; display: block; }
+        .visual-slot { width: 100%; overflow: hidden; margin: 0; padding: 0; line-height: 0; }
+        .visual-slot img { width: 100%; height: auto; display: block; }
 
         /* --- CONSTELLATION GARDEN SPECIFIC STYLES --- */
         .cursive-font { font-family: 'Snell Roundhand', cursive; }
@@ -259,7 +259,7 @@
             transition: transform 0.1s ease-out; 
         }
 
-        /* --- FULL LUCK DESIGN: POKER SYSTEM SPECIFIC --- */
+        /* --- FULL LUCK: POKER SYSTEM SPECIFIC --- */
         .pkr-main-container { position: relative; width: 100%; background: #000; }
         .pkr-viewport { height: 100vh; width: 100%; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; }
         .pkr-card-wrapper { position: absolute; width: 130px; aspect-ratio: 2.5 / 3.5; transition: z-index 0.3s; cursor: pointer; pointer-events: auto; }
@@ -523,7 +523,7 @@
                             <div class="col-span-12 lg:col-span-7 space-y-6">
                                 <div class="bg-white p-4 hard-shadow-sm flex flex-col md:flex-row gap-6 items-center">
                                     <div class="w-full md:w-1/2">
-                                        <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481522/image_39_yhwxdy.jpg" alt="Survey Data" class="w-full grayscale hover:grayscale-0 transition-all cursor-pointer" onclick="window.open('https://www.dropbox.com/scl/fi/j8jio0dojlte0nhoc12it/_4-1-2026_143442_docs.google.com.pdf?rlkey=em1oj9f8uxn2ldixz1eo66rkt&st=7kne6xld&dl=0')">
+                                        <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481522/image_39_yhwxdy.jpg" alt="Survey Data" class="w-full grayscale hover:grayscale-0 transition-all duration-1000 cursor-pointer" onclick="window.open('https://www.dropbox.com/scl/fi/j8jio0dojlte0nhoc12it/_4-1-2026_143442_docs.google.com.pdf?rlkey=em1oj9f8uxn2ldixz1eo66rkt&st=7kne6xld&dl=0')">
                                     </div>
                                     <div class="w-full md:w-1/2 text-xs">
                                         <p class="mb-4 font-bold uppercase">Click image to view full survey data →</p>
@@ -812,8 +812,8 @@
                                 </div>
                             </div>
                             <div class="col-span-8 grid grid-cols-2 gap-4">
-                                <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770657873/3_dfyfg0.jpg" class="border-2 border-black collage-img hard-shadow-sm grayscale hover:grayscale-0 transition-all duration-700" alt="Evolution 1">
-                                <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770657872/4_yrl0wt.jpg" class="border-2 border-black collage-img mt-12 hard-shadow-sm grayscale hover:grayscale-0 transition-all duration-700" alt="Evolution 2">
+                                <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770657873/3_dfyfg0.jpg" class="border-2 border-black collage-img hard-shadow-sm grayscale hover:grayscale-0 transition-all duration-1000" alt="Evolution 1">
+                                <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770657872/4_yrl0wt.jpg" class="border-2 border-black collage-img mt-12 hard-shadow-sm grayscale hover:grayscale-0 transition-all duration-1000" alt="Evolution 2">
                             </div>
                         </div>
                     </section>
@@ -1107,7 +1107,6 @@
                 <section v-else class="visual-gallery">
                     <div v-for="(img, index) in currentProject.gallery" :key="index" class="visual-slot">
                         <img v-if="img" :src="img" alt="Documentation">
-                        <div v-else class="w-full h-full bg-[#080808] flex items-center justify-center border-y border-white/[0.02]"><span class="text-[8px] text-white/5 tracking-[0.8em] uppercase">Visual Artifact 0{{ index + 1 }}</span></div>
                     </div>
                 </section>
 
@@ -1200,7 +1199,7 @@
                         year: "2024", 
                         context: "Former silk warehouse turned art district lacks visibility and coherent navigation.",
                         strategy: "Rebuild spatial identity through environmental graphics.",
-                        solution: "Thread-inspired visual language referencing historical silk industry.\nIntegrated signage improving visitor journey clarity.",
+                        solution: "Thread-inspired visual language referencing historical silk industry. Integrated signage improving visitor journey clarity.",
                         impact: "Strengthens place identity while improving usability."
                     }, 
                     gallery: [] 
@@ -1220,7 +1219,24 @@
                     }, 
                     gallery: [] 
                 },
-                { id: 'share-bite', name: "Share a Bite — Shared Kitchen", category: "Visual", tags: ["Branding"], details: { year: "2024", context: "Shared kitchen service identity." }, gallery: ["", "", "", "", "", "", "", ""] }
+                { 
+                    id: 'share-bite', 
+                    name: "Share a Bite — Shared Kitchen", 
+                    category: "Visual", 
+                    tags: ["Branding"], 
+                    cardImg: "https://res.cloudinary.com/dhonki8qe/image/upload/v1773011074/Frame_315_i1n4y2.png",
+                    details: { 
+                        year: "2024", 
+                        context: "University students seek flexible cooking spaces but face safety and infrastructure constraints.",
+                        solution: "Shared kitchen service model combining:\nsafe cooking facilities\nsocial dining experience\naffordable group gathering.\nBrand concept emphasises food sharing as social bonding."
+                    }, 
+                    gallery: [
+                        "https://res.cloudinary.com/dhonki8qe/image/upload/v1773009907/MacBook_Pro_16__-_19_ykl5gb.png",
+                        "https://res.cloudinary.com/dhonki8qe/image/upload/v1773010016/MacBook_Pro_16__-_18_jallf5.png",
+                        "https://res.cloudinary.com/dhonki8qe/image/upload/v1773010016/MacBook_Pro_16__-_17_o2zbrs.png",
+                        "https://res.cloudinary.com/dhonki8qe/image/upload/v1773009907/MacBook_Pro_16__-_20_a13vfl.png"
+                    ] 
+                }
             ]
         };
 
