@@ -1,1430 +1,1007 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio | Yundu Chen</title>
-    
-    <!-- 1. Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- 2. Tailwind CSS -->
+    <title>Doggo Go — Community Care Case Study</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        void: '#050505',
-                        mist: '#F0F0F0',
-                        acid: '#CCFF00',
-                        glass: 'rgba(255, 255, 255, 0.03)',
-                        glassBorder: 'rgba(255, 255, 255, 0.1)'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Syne', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
-
-    <!-- 3. Scripts: GSAP & Plugins -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-
-    <!-- 4. Styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* Special Fonts for Constellation Garden */
-        @font-face {
-            font-family: 'Snell Roundhand';
-            src: local('Snell Roundhand'), local('SnellRoundhand');
-        }
-        @font-face {
-            font-family: '03HomuraM-SemiLight';
-            src: local('03HomuraM-SemiLight');
+        :root {
+            --bg-main: #F8FAEC;
+            --accent-orange: #FD9243;
+            --accent-dark: #414141;
+            --accent-green: #50A459;
+            --accent-yellow: #F9E76C;
+            --accent-blue: #CAECF6;
+            --accent-purple: #8C70FF;
+            --border-width: 2px;
+            --shadow-size: 4px;
         }
 
         body {
-            background-color: #050505;
-            color: #F0F0F0;
-            overflow-x: hidden;
-            cursor: none;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .noise-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 9998;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
-        }
-
-        /* Cursor */
-        .cursor-dot, .cursor-outline {
-            position: fixed;
-            top: 0; left: 0;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            z-index: 9999;
-            pointer-events: none;
-        }
-        .cursor-dot { width: 8px; height: 8px; background-color: #CCFF00; }
-        .cursor-outline {
-            width: 40px; height: 40px;
-            border: 1px solid rgba(240, 240, 240, 0.5);
-            transition: width 0.2s, height 0.2s;
-            mix-blend-mode: exclusion;
-        }
-        body.hovering .cursor-outline { width: 80px; height: 80px; background-color: rgba(255, 255, 255, 0.1); }
-
-        .detail-label {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.4em;
-            color: #CCFF00;
-            font-weight: 800;
-            margin-bottom: 0.75rem;
-            display: block;
-        }
-
-        .pill-tag {
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 1px 8px;
-            border-radius: 4px;
-            display: inline-block;
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #888;
-        }
-
-        /* Project Card Alignment */
-        .project-preview-box {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background: #0d0d0d;
-            border-radius: 2px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .project-preview-box img, .project-preview-box video { width: 100%; height: 100%; object-fit: cover; }
-        .project-title-container { min-height: 3.5rem; margin-top: 1rem; margin-bottom: 0.5rem; }
-
-        .category-header { font-weight: 900; letter-spacing: 0.4em; color: #CCFF00; }
-        .vertical-arrow-guide {
-            width: 1px; height: 50px;
-            background: linear-gradient(to bottom, #CCFF00, transparent);
-            margin: 1rem 0 2rem 0; opacity: 0.6; position: relative;
-        }
-        .vertical-arrow-guide::after {
-            content: ''; position: absolute; bottom: 0; left: 0; width: 8px; height: 8px;
-            border-right: 1px solid #CCFF00; border-bottom: 1px solid #CCFF00;
-            transform: translateX(-50%) rotate(45deg); clip-path: polygon(100% 0, 100% 100%, 0 100%); 
-        }
-
-        /* Default Gallery Slots - 去掉了强制长宽比，按照图片大小占满 */
-        .visual-gallery { display: flex; flex-direction: column; width: 100%; margin: 0; padding: 0; }
-        .visual-slot { width: 100%; overflow: hidden; margin: 0; padding: 0; line-height: 0; }
-        .visual-slot img { width: 100%; height: auto; display: block; }
-
-        /* --- CONSTELLATION GARDEN SPECIFIC STYLES --- */
-        .cursive-font { font-family: 'Snell Roundhand', cursive; }
-        .main-text-star { font-family: '03HomuraM-SemiLight', "Source Han Serif CN", "Songti SC", serif; line-height: 1.6; font-size: 14px; }
-        .video-container video { width: 100%; height: auto; display: block; }
-        
-        .section-dark-star { background-color: #000; padding: 60px 40px; color: #fff; text-align: left; }
-        .section-light-star { background-color: #fff; color: #000; padding: 80px 0 0 0; position: relative; min-height: 100vh; text-align: left; }
-
-        .planet-crop { width: 30%; overflow: hidden; display: flex; justify-content: flex-start; }
-        .planet-crop video { width: 200%; max-width: none; margin-left: -100%; }
-
-        .video-p2-container { width: 320px; height: 240px; overflow: hidden; background: transparent; display: flex; align-items: center; justify-content: center; }
-        .video-p2-container video { width: 100%; height: 100%; object-fit: contain; }
-
-        .interactive-container-star { position: relative; width: 100vw; left: 50%; transform: translateX(-50%); overflow: hidden; background-color: #fff; }
-        .base-image-star { width: 100%; height: auto; display: block; }
-
-        .floating-logo-star {
-            position: absolute; top: calc(15% + 6.0cm); left: calc(10% - 2.3cm);
-            width: 18%; pointer-events: none; transition: transform 0.1s ease-out; z-index: 30; 
-        }
-
-        .overlay-video-p9-star {
-            position: absolute; bottom: calc(1319px - 12.5cm); left: 10.5%; 
-            width: 15.8%; aspect-ratio: 418 / 900; border-radius: 20px; 
-            overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            transition: transform 0.15s ease-out; z-index: 20;
-        }
-        .overlay-video-p9-star video { width: 100%; height: 100%; object-fit: cover; }
-
-        /* --- GENZ4GOOD & PAW-TO-PAW & CO-VISION SWISS STYLE SPECIFIC --- */
-        :root {
-            --genz-blue: #029CE5;
-            --genz-yellow: #FEE879;
-            --genz-light-gray: #EFEFEF;
-            --paw-green: #CFFF5E;
-            --paw-red: #ED3131;
-            /* Co-Vision Chess variables */
-            --cvc-bg: #F7FEFF;
-            --cvc-primary: #A496FF;
-            --cvc-mint: #B6FFE0;
-            --cvc-yellow: #F9E958;
-        }
-
-        .swiss-content-wrapper {
-            background-color: var(--genz-light-gray);
-            color: #000;
+            background-color: var(--bg-main);
             font-family: 'Inter', sans-serif;
+            color: var(--accent-dark);
+            overflow-x: hidden;
+        }
+
+        .heading-brutal {
+            font-family: 'Unbounded', sans-serif;
+            font-weight: 900;
+            line-height: 1.1;
+            text-transform: uppercase;
+        }
+
+        .card-brutal {
+            border: var(--border-width) solid var(--accent-dark);
+            box-shadow: var(--shadow-size) var(--shadow-size) 0px 0px var(--accent-dark);
+            border-radius: 0px;
+            transition: all 0.2s ease;
+            position: relative;
+            background-color: white;
+        }
+
+        .card-brutal:hover {
+            transform: translate(-1px, -1px);
+            box-shadow: 6px 6px 0px 0px var(--accent-dark);
+        }
+
+        /* Persona Horizontal Scroll Section */
+        .persona-analysis-section {
+            height: 400vh;
+            position: relative;
+            margin-top: 40px;
+        }
+
+        .sticky-wrapper {
+            position: sticky;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .scrolling-track {
+            display: flex;
+            padding-left: 50px;
+            transition: transform 0.1s ease-out;
+            will-change: transform;
+        }
+
+        .persona-card-full {
+            flex-shrink: 0;
+            width: 1000px; 
+            height: 65vh;  
+            background: white;
+            margin-right: 80px;
+            border: var(--border-width) solid var(--accent-dark);
+            box-shadow: var(--shadow-size) var(--shadow-size) 0px 0px var(--accent-dark);
+            display: grid;
+            grid-template-columns: 240px 1fr 1.2fr; 
+            padding: 2.5rem;
+            gap: 2.5rem;
             position: relative;
         }
 
-        .swiss-grid-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px;
-            pointer-events: none; z-index: 1; opacity: 0.03;
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            border-right: 2px solid var(--accent-dark);
+            padding-right: 1.5rem;
         }
-        .swiss-grid-overlay div { background: #000; height: 100%; }
 
-        .hard-shadow { box-shadow: 8px 8px 0px #000; border: 2px solid #000; }
-        .hard-shadow-sm { box-shadow: 4px 4px 0px #000; border: 1.5px solid #000; }
+        .avatar-box-refined {
+            width: 160px; 
+            height: 200px;
+            background: #e2e8f0;
+            border: var(--border-width) solid var(--accent-dark);
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
 
-        .vertical-text-genz {
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
+        .avatar-box-refined img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .basic-info p {
+            font-size: 0.8rem;
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .content-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 1.5rem;
+        }
+
+        .module-block {
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--accent-dark);
+        }
+
+        .module-block:last-child {
+            border-bottom: none;
+        }
+
+        .module-title-refined {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 1.2rem;
             font-weight: 900;
+            margin-bottom: 0.75rem;
+            color: var(--accent-dark);
             text-transform: uppercase;
-            line-height: 0.8;
-            user-select: none;
         }
 
-        .genz-tag {
-            background: #000; color: #fff;
-            padding: 2px 8px; font-size: 0.75rem;
-            font-weight: 700; display: inline-block;
-            margin-bottom: 1rem;
+        .module-text-refined {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--accent-dark);
         }
 
-        .rotate-slight { transform: rotate(-1deg); }
-        .rotate-reverse { transform: rotate(1.5deg); }
-
-        .content-block-swiss { background: #fff; padding: 3rem; position: relative; }
-        .blue-text { color: var(--genz-blue); }
-        .yellow-bg { background-color: var(--genz-yellow); }
-        .blue-bg { background-color: var(--genz-blue); color: #fff; }
-
-        /* Paw to Paw Specific */
-        .paw-swiss-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem; }
-        .paw-vertical-text { writing-mode: vertical-rl; transform: rotate(180deg); }
-        .accent-green { background-color: var(--paw-green); }
-        .accent-red { background-color: var(--paw-red); }
-        .collage-img { transition: transform 0.3s ease; cursor: crosshair; }
-        .collage-img:hover { transform: scale(1.01); }
-
-        /* Co-Vision Chess Specific */
-        .cvc-swiss-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; }
-        .cvc-hard-shadow { box-shadow: 10px 10px 0px #000; }
-        .cvc-border-thin { border: 1.5px solid #000; }
-        .cvc-vertical-text { writing-mode: vertical-rl; text-orientation: mixed; }
-        .cvc-section-title { font-size: 2.5rem; font-weight: 900; line-height: 1.1; letter-spacing: -0.05em; text-transform: uppercase; }
-        .cvc-sub-title { font-size: 1.15rem; font-weight: 700; background-color: var(--cvc-yellow); display: inline-block; padding: 2px 10px; margin-bottom: 1.2rem; border: 1.5px solid #000; }
-        .cvc-hmw-card { background-color: var(--cvc-mint); padding: 3rem 2rem; position: relative; }
-        .cvc-hmw-tag { background-color: var(--cvc-primary); color: white; padding: 4px 12px; font-weight: 900; font-size: 1.5rem; display: inline-block; margin-bottom: 1.5rem; }
-
-        /* --- BEICANGMEN WAYFINDING SPECIFIC --- */
-        .bc-gallery { width: 100%; display: flex; flex-direction: column; background-color: #fff; }
-        .bc-gallery img { display: block; width: 100%; height: auto; border: 0.1pt solid #000000; }
-        .bc-parallax-container { 
-            width: 100%; 
-            height: 100vh; 
-            overflow: hidden; 
-            border: 0.1pt solid #000000; 
-            position: relative; 
-            line-height: 0; 
-            background-color: #ffffff; 
-            padding-left: 40vw; 
-        }
-        #bc-parallax-img { 
-            display: block; 
-            height: 100vh; 
-            width: auto; 
-            min-width: 180vw; 
-            border: none; 
-            will-change: transform; 
-            transition: transform 0.1s ease-out; 
+        .list-refined {
+            font-size: 0.85rem;
+            line-height: 1.4;
         }
 
-        /* --- FULL LUCK: POKER SYSTEM SPECIFIC --- */
-        .pkr-main-container { position: relative; width: 100%; background: #000; }
-        .pkr-viewport { height: 100vh; width: 100%; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; }
-        .pkr-card-wrapper { position: absolute; width: 130px; aspect-ratio: 2.5 / 3.5; transition: z-index 0.3s; cursor: pointer; pointer-events: auto; }
-        .pkr-card-inner { width: 100%; height: 100%; background-size: cover; background-position: center; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.1); will-change: transform; }
-        .pkr-card-wrapper.is-selected .pkr-card-inner { box-shadow: 0 0 40px rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.4); }
-        .pkr-guide { position: absolute; bottom: 5%; font-size: 11px; color: #555; letter-spacing: 3px; text-transform: uppercase; pointer-events: none; z-index: 10; }
-        @media (max-width: 768px) { .pkr-card-wrapper { width: 80px; } }
-
-        @media (max-width: 1024px) {
-            .overlay-video-p9-star { bottom: 20%; width: 20%; left: 8%; }
+        .list-refined li {
+            margin-bottom: 6px;
+            padding-left: 1.2rem;
+            position: relative;
         }
 
-        @media (max-width: 768px) {
-            .section-dark-star { padding: 40px 20px; }
-            .planet-crop { width: 40%; }
-            .video-p2-container { width: 240px; height: 180px; }
-            .floating-logo-star { width: 30%; top: calc(15% + 4.0cm); left: calc(10% - 1.3cm); }
-            .overlay-video-p9-star { width: 35%; left: 5%; bottom: 15%; }
-            .content-block-swiss { padding: 1.5rem; }
-            .paw-swiss-grid { display: block; }
-            .paw-swiss-grid > div { margin-bottom: 2rem; }
-            .cvc-swiss-grid { display: block; }
-            .cvc-vertical-text { writing-mode: horizontal-tb; }
-            .cvc-section-title { font-size: 2rem !important; }
-            .bc-parallax-container { padding-left: 10vw; } 
+        .list-refined li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            font-weight: 900;
+        }
+
+        /* Rotating Text */
+        .rotating-text {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            animation: rotate 25s linear infinite;
+            z-index: 40;
+            pointer-events: none;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Image Stack */
+        .img-stack-container {
+            position: relative;
+            height: 380px;
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+        }
+
+        .stacked-img {
+            position: absolute;
+            width: 240px;
+            height: auto;
+            border: var(--border-width) solid var(--accent-dark);
+            box-shadow: 3px 3px 0px 0px var(--accent-dark);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .stacked-img:nth-child(1) { top: 0; left: 0; transform: rotate(-4deg); z-index: 11; }
+        .stacked-img:nth-child(2) { top: 25px; left: 35px; transform: rotate(2deg); z-index: 12; }
+        .stacked-img:nth-child(3) { top: 50px; left: 70px; transform: rotate(-3deg); z-index: 13; }
+        .stacked-img:nth-child(4) { top: 75px; left: 105px; transform: rotate(4deg); z-index: 14; }
+        .stacked-img:nth-child(5) { top: 100px; left: 140px; transform: rotate(-2deg); z-index: 15; }
+
+        .stacked-img:hover {
+            z-index: 100 !important;
+            transform: scale(1.05) rotate(0deg) !important;
+        }
+
+        .marquee {
+            white-space: nowrap;
+            overflow: hidden;
+            background: var(--accent-dark);
+            color: #fff;
+            padding: 12px 0;
+            border-top: var(--border-width) solid var(--accent-dark);
+            border-bottom: var(--border-width) solid var(--accent-dark);
+        }
+
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 40s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { 
+            background: var(--accent-dark); 
+            border: 2px solid var(--bg-main);
+        }
+
+        /* Needs & Pain Points Styles */
+        .node-item {
+            font-size: 11px;
+            line-height: 1.2;
+            padding: 10px;
+            background-color: white;
+            z-index: 10;
+        }
+
+        .node-s { border-color: var(--accent-orange); background-color: #fffaf5; }
+        .node-o { border-color: var(--accent-purple); background-color: #f8f7ff; }
+        .node-m { border-color: var(--accent-dark); font-weight: 700; background-color: #ffffff; text-align: center; }
+
+        #mapping-svg-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Magnifier Styles - High Performance */
+        .magnifier-container {
+            position: relative;
+            cursor: crosshair;
+            overflow: hidden;
+        }
+
+        .magnifier-lens {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 66.66vw; /* 屏幕宽度的 2/3 */
+            height: 66.66vw;
+            border: 4px solid var(--accent-dark);
+            border-radius: 50%;
+            pointer-events: none;
+            visibility: hidden;
+            z-index: 50;
+            background-repeat: no-repeat;
+            background-color: white;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            will-change: transform; /* 告诉浏览器开启硬件加速 */
         }
     </style>
 </head>
-<body>
+<body class="p-6 md:p-12">
 
-    <div id="app" class="relative">
-        <div class="noise-overlay"></div>
-
-        <div ref="cursorDot" class="cursor-dot hidden md:block"></div>
-        <div ref="cursorOutline" class="cursor-outline hidden md:block"></div>
-
-        <!-- Global Nav -->
-        <nav class="fixed top-0 left-0 w-full px-6 py-8 flex justify-between items-center z-50 mix-blend-difference">
-            <div class="text-xl font-display font-bold tracking-tighter cursor-pointer" @click="scrollToTop" @mouseenter="cursorHover" @mouseleave="cursorLeave">
-                {{ profile.nav.logo }}
+    <!-- Header Section -->
+    <header class="max-w-7xl mx-auto mb-20 relative">
+        <div class="flex flex-col md:flex-row justify-between items-end gap-8">
+            <div class="flex-1">
+                <h1 class="heading-brutal text-6xl md:text-8xl tracking-tighter text-[#414141]">DOGGO GO</h1>
+                <p class="text-2xl font-bold mt-6 text-[#414141]">Community Care Project</p>
             </div>
-            <ul class="flex space-x-8 text-[11px] uppercase tracking-widest font-medium">
-                <li v-for="item in profile.nav.links" :key="item.text" class="cursor-pointer hover:text-acid transition-colors duration-300" @click="handleNavClick(item.target)" @mouseenter="cursorHover" @mouseleave="cursorLeave">
-                    {{ item.text }}
-                </li>
-            </ul>
-        </nav>
-
-        <div class="view-container">
-            
-            <!-- SECTION: HOME VIEW -->
-            <div v-if="currentView === 'home'" key="home">
-                <!-- Hero Section -->
-                <section id="hero" class="min-h-screen flex flex-col justify-center items-center px-6 text-center pt-20">
-                    <h1 class="font-display text-5xl md:text-8xl font-bold tracking-tighter text-mist">{{ profile.hero.name }}</h1>
-                    <div class="h-12"></div>
-                    <div class="max-w-3xl text-[14px] leading-relaxed text-gray-400 space-y-10">
-                        <div id="about-anchor"><span class="text-mist font-bold uppercase tracking-[0.3em] block mb-3 text-[10px]">Who Am I</span><p class="max-w-2xl mx-auto italic">{{ profile.hero.whoAmI }}</p></div>
-                        <div>
-                            <span class="text-mist font-bold uppercase tracking-[0.3em] block mb-4 text-[10px]">What I Do</span>
-                            <div class="flex flex-wrap justify-center gap-3">
-                                <span v-for="tag in profile.hero.whatIDoTags" :key="tag" class="pill-tag">{{ tag }}</span>
-                            </div>
-                        </div>
-                        <div class="pt-10 flex justify-center items-center space-x-12 opacity-30 grayscale hover:opacity-100 transition-all duration-700">
-                            <span v-for="partner in profile.partners" :key="partner" class="font-display font-extrabold text-xl tracking-tighter">{{ partner }}</span>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Works Section -->
-                <section id="projects" class="py-24 px-6 md:px-20 border-t border-white/5">
-                    <h2 class="font-display text-4xl text-mist flex items-center mb-16"><span class="w-3 h-3 bg-acid rounded-full mr-4"></span>Works</h2>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-12 items-start" @mouseleave="focusedProject = null">
-                        <div class="flex flex-col items-start"><span class="category-header text-[14px] md:text-[18px] uppercase">Service Design</span><div class="vertical-arrow-guide"></div></div>
-                        <div class="hidden md:flex flex-col items-start"><span class="category-header text-[14px] md:text-[18px] uppercase">Visual Design</span><div class="vertical-arrow-guide"></div></div>
-
-                        <template v-for="rowIndex in maxProjectRows" :key="rowIndex">
-                            <!-- Service Design Column -->
-                            <div v-if="getProjectByRow('Service', rowIndex-1)" 
-                                 @click="setView(getProjectByRow('Service', rowIndex-1).id)"
-                                 class="project-item group cursor-pointer transition-all duration-500"
-                                 :class="{'opacity-20': focusedProject && focusedProject !== getProjectByRow('Service', rowIndex-1).id}"
-                                 @mouseenter="focusedProject = getProjectByRow('Service', rowIndex-1).id; cursorHover()" @mouseleave="cursorLeave">
-                                <div class="project-preview-box">
-                                    <video v-if="getProjectByRow('Service', rowIndex-1).cardImg && (getProjectByRow('Service', rowIndex-1).cardImg.toLowerCase().endsWith('.mp4') || getProjectByRow('Service', rowIndex-1).cardImg.toLowerCase().endsWith('.mov'))" 
-                                           autoplay loop muted playsinline 
-                                           class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000">
-                                        <source :src="getProjectByRow('Service', rowIndex-1).cardImg" type="video/mp4">
-                                    </video>
-                                    <img v-else :src="getProjectByRow('Service', rowIndex-1).cardImg || 'https://via.placeholder.com/1728x1117/0a0a0a/0a0a0a?text=+'" 
-                                         class="grayscale group-hover:grayscale-0 transition-all duration-1000">
-                                </div>
-                                <div class="project-title-container"><h3 class="font-display text-xl md:text-2xl font-bold text-mist group-hover:text-acid transition-colors leading-tight">{{ getProjectByRow('Service', rowIndex-1).name }}</h3></div>
-                                <div class="flex flex-wrap gap-2 pt-1"><span v-for="tag in getProjectByRow('Service', rowIndex-1).tags" :key="tag" class="pill-tag">{{ tag }}</span></div>
-                            </div>
-                            <div v-else class="hidden md:block"></div>
-
-                            <!-- Visual Design Column -->
-                            <div v-if="getProjectByRow('Visual', rowIndex-1)" 
-                                 @click="setView(getProjectByRow('Visual', rowIndex-1).id)"
-                                 class="project-item group cursor-pointer transition-all duration-500"
-                                 :class="{'opacity-20': focusedProject && focusedProject !== getProjectByRow('Visual', rowIndex-1).id}"
-                                 @mouseenter="focusedProject = getProjectByRow('Visual', rowIndex-1).id; cursorHover()" @mouseleave="cursorLeave">
-                                <div class="project-preview-box">
-                                    <video v-if="getProjectByRow('Visual', rowIndex-1).cardImg && (getProjectByRow('Visual', rowIndex-1).cardImg.toLowerCase().endsWith('.mp4') || getProjectByRow('Visual', rowIndex-1).cardImg.toLowerCase().endsWith('.mov'))" 
-                                           autoplay loop muted playsinline 
-                                           class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000">
-                                        <source :src="getProjectByRow('Visual', rowIndex-1).cardImg" type="video/mp4">
-                                    </video>
-                                    <img v-else :src="getProjectByRow('Visual', rowIndex-1).cardImg || 'https://via.placeholder.com/1728x1117/0a0a0a/0a0a0a?text=+'" 
-                                         class="grayscale group-hover:grayscale-0 transition-all duration-1000">
-                                </div>
-                                <div class="project-title-container"><h3 class="font-display text-xl md:text-2xl font-bold text-mist group-hover:text-acid transition-colors leading-tight">{{ getProjectByRow('Visual', rowIndex-1).name }}</h3></div>
-                                <div class="flex flex-wrap gap-2 pt-1"><span v-for="tag in getProjectByRow('Visual', rowIndex-1).tags" :key="tag" class="pill-tag">{{ tag }}</span></div>
-                            </div>
-                            <div v-else class="hidden md:block"></div>
-                        </template>
-                    </div>
-                </section>
-
-                <footer id="contact" class="min-h-[50vh] flex flex-col justify-center items-center px-6 md:px-20 border-t border-white/5 text-center">
-                    <p class="text-acid mb-6 text-sm font-mono tracking-widest uppercase">Get in Touch</p>
-                    <a :href="'mailto:' + profile.contact.email" class="block text-2xl md:text-4xl font-display font-bold hover:text-acid transition-colors mb-10 tracking-tighter" @mouseenter="cursorHover" @mouseleave="cursorLeave">{{ profile.contact.email }}</a>
-                    <a href="https://www.linkedin.com/in/yundu-chen-46b2ba397" target="_blank" class="flex items-center gap-3 text-gray-600 hover:text-white transition-all group" @mouseenter="cursorHover" @mouseleave="cursorLeave"><svg class="w-5 h-5 fill-current group-hover:text-acid transition-colors" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg><span class="text-[10px] uppercase tracking-[0.3em] font-bold">Connect on LinkedIn</span></a>
-                    <div class="mt-24 text-gray-800 text-[10px] uppercase tracking-widest italic">© {{ new Date().getFullYear() }} Yundu Chen</div>
-                </footer>
-            </div>
-
-            <!-- VIEW: PROJECT DETAIL -->
-            <div v-else-if="currentProject" key="detail" class="min-h-screen">
-                <section class="py-20 md:py-24 px-6 md:px-32 max-w-7xl mx-auto">
-                    <div class="mb-16">
-                        <span class="detail-label">Case Study</span>
-                        <h1 class="font-display text-2xl md:text-4xl font-black text-mist tracking-tighter leading-[1.1] mb-8 max-w-5xl uppercase">{{ currentProject.name }}</h1>
-                        <div class="flex flex-wrap items-center gap-x-12 gap-y-6 pt-6 border-t border-white/10">
-                            <div v-if="currentProject.details.role"><span class="detail-label opacity-40 mb-1">Role</span><p class="text-mist text-[11px] font-bold uppercase">{{ currentProject.details.role }}</p></div>
-                            <div v-if="currentProject.details.year"><span class="detail-label opacity-40 mb-1">Year</span><p class="text-mist text-[11px] font-bold">{{ currentProject.details.year }}</p></div>
-                            <div class="flex-grow"></div>
-                            <div class="flex gap-2"><span v-for="tag in currentProject.tags" :key="tag" class="pill-tag border border-acid/20 text-acid bg-acid/5">{{ tag }}</span></div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-12 items-start">
-                        <div v-if="currentProject.details.context"><span class="detail-label text-acid">Context</span><p class="text-gray-300 text-[15px] leading-relaxed italic border-l-2 border-acid/30 pl-6 whitespace-pre-line">{{ currentProject.details.context }}</p></div>
-                        <div v-if="currentProject.details.strategy"><span class="detail-label text-acid">Strategy / Approach</span><p class="text-gray-400 text-[14px] leading-loose whitespace-pre-line">{{ currentProject.details.strategy }}</p></div>
-                        <div v-else class="hidden md:block"></div>
-                        <div v-if="currentProject.details.opportunity || currentProject.details.objective"><span class="detail-label text-acid">{{ currentProject.details.opportunity ? 'Opportunity' : 'Objective' }}</span><p class="text-gray-300 text-[15px] leading-relaxed whitespace-pre-line">{{ currentProject.details.opportunity || currentProject.details.objective }}</p></div>
-                        <div v-if="currentProject.details.solution"><span class="detail-label text-acid">Solution</span><p class="text-gray-400 text-[14px] leading-loose whitespace-pre-line">{{ currentProject.details.solution }}</p></div>
-                        <div v-else class="hidden md:block"></div>
-                        <div v-if="currentProject.details.impact" class="md:col-span-2 bg-white/[0.02] p-8 md:p-12 rounded-2xl border border-glassBorder mt-4"><span class="detail-label">Outcome & Impact</span><p class="text-gray-200 text-[15px] leading-relaxed max-w-4xl whitespace-pre-line">{{ currentProject.details.impact }}</p></div>
-                    </div>
-                </section>
-
-                <!-- CUSTOM SECTION: STAR RETROCESSION CONSTELLATION GARDEN -->
-                <div v-if="currentProject.id === 'star-retro'" class="w-full">
-                    <!-- Part 1: Black Background -->
-                    <section class="section-dark-star min-h-screen flex flex-col items-start">
-                        <h1 class="cursive-font text-5xl md:text-7xl mb-12 leading-tight tracking-wide">CONSTELLATION<br>GARDEN</h1>
-                        <div class="w-full max-w-lg mx-auto mb-16 video-container">
-                            <video autoplay loop muted playsinline><source src="https://res.cloudinary.com/dhonki8qe/video/upload/v1770424834/star01_ibhq7a.mp4" type="video/mp4"></video>
-                        </div>
-                        <div class="max-w-4xl mx-auto mb-24 text-center">
-                            <p class="main-text-star opacity-90">The Twenty-Eight Mansions are twenty-eight star regions divided by ancient Chinese astronomers for observing the movements of the sun, moon, and five planets. They consist of seven mansions each for the Azure Dragon in the East, the Vermilion Bird in the South, the White Tiger in the West, and the Black Tortoise in the North.</p>
-                        </div>
-                        <div class="w-full flex flex-col md:flex-row gap-8 mb-24 items-start px-10">
-                            <div class="md:w-1/2">
-                                <p class="main-text-star text-xs mb-6 opacity-80">The phrase "stars return" originally referred to the stars returning to their original positions,<br>signifying the end of the year.</p>
-                                <div class="video-p2-container"><video autoplay loop muted playsinline><source src="https://res.cloudinary.com/dhonki8qe/video/upload/v1770424887/star02_fkzjrq.mp4" type="video/mp4"></video></div>
-                            </div>
-                        </div>
-                        <div class="w-full flex flex-col md:flex-row justify-between items-end mt-auto px-10">
-                            <div class="mb-8 md:mb-0"><p class="main-text-star text-xs opacity-70">The logo combines<br>star graphics<br>and<br>flowers.</p></div>
-                            <div class="flex items-center gap-0 mr-[-10px] md:mr-0"> 
-                                <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770424975/star03_av2qdh.png" alt="Logo Graphic" class="h-32 md:h-56 object-contain">
-                                <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770424986/star04_brc37i.png" alt="Logo Icon" class="h-20 md:h-32 object-contain">
-                            </div>
-                        </div>
-                    </section>
-                    <!-- Part 2: White Background -->
-                    <section class="section-light-star">
-                        <div class="absolute right-10 top-10 text-right"><p class="main-text-star text-sm italic">romantic and dreamlike<br>starry garden</p></div>
-                        <div class="flex items-center pt-24 pb-12 w-full">
-                            <div class="planet-crop"><video autoplay loop muted playsinline><source src="https://res.cloudinary.com/dhonki8qe/video/upload/v1770424995/star05_j1dndk.mp4" type="video/mp4"></video></div>
-                            <div class="w-1/2 md:w-1/2 ml-auto mr-12 video-container"><video autoplay loop muted playsinline><source src="https://res.cloudinary.com/dhonki8qe/video/upload/v1770424999/star06_rqlklo.mp4" type="video/mp4"></video></div>
-                        </div>
-                        <div class="text-right px-10 mb-12"><p class="main-text-star text-sm">blue sky<br>sunrise</p></div>
-                        <div class="w-screen relative left-1/2 -translate-x-1/2 video-container">
-                            <video autoplay loop muted playsinline class="w-full"><source src="https://res.cloudinary.com/dhonki8qe/video/upload/v1770425013/star07_yjp74m.mp4" type="video/mp4"></video>
-                        </div>
-                        <!-- Interactive Parallax Section -->
-                        <div class="interactive-container-star" id="logoContainer">
-                            <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770425084/star08_evv2ub.jpg" class="base-image-star" alt="Background">
-                            <div class="overlay-video-p9-star" id="p9Video"><video autoplay loop muted playsinline><source src="https://res.cloudinary.com/dhonki8qe/video/upload/v1770425093/star09_lzjheb.mp4" type="video/mp4"></video></div>
-                            <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770428685/oxayh4.tif_4x_2_bqmseg.png" class="floating-logo-star" id="shakingLogo" alt="Floating Logo">
-                        </div>
-                    </section>
+            <div class="flex-shrink-0">
+                <div class="bg-[#FD9243] p-8 card-brutal max-w-sm">
+                    <p class="font-bold uppercase italic text-[#414141] leading-tight text-xs">A trust-driven, low-barrier, non-purely-commercial mutual assistance platform connecting pet owners and service providers.</p>
                 </div>
-
-                <!-- CUSTOM SECTION: GENZ4GOOD SWISS STYLE -->
-                <div v-else-if="currentProject.id === 'genz-future'" class="w-full swiss-content-wrapper">
-                    <div class="swiss-grid-overlay">
-                        <div></div><div></div><div></div><div></div><div></div><div></div>
-                        <div></div><div></div><div></div><div></div><div></div><div></div>
-                    </div>
-
-                    <!-- Background Vertical Text decoration -->
-                    <div class="fixed right-4 top-24 vertical-text-genz text-[15vh] opacity-10 pointer-events-none z-10">
-                        GENZ4GOOD
-                    </div>
-
-                    <main class="max-w-7xl mx-auto space-y-24 px-4 md:px-8 py-24 relative z-20">
-                        <!-- SECTION 1: PROBLEM CONTEXT -->
-                        <section class="grid grid-cols-12 gap-6 items-start">
-                            <div class="col-span-12 lg:col-span-8 content-block-swiss hard-shadow rotate-slight">
-                                <div class="genz-tag">01 / CONTEXT</div>
-                                <h2 class="text-6xl font-black uppercase leading-none mb-6">PROBLEM<br><span class="blue-text">CONTEXT</span></h2>
-                                <div class="mt-8">
-                                    <h3 class="text-2xl font-bold uppercase border-b-2 border-black pb-2">Background</h3>
-                                    <p class="text-xl font-bold mt-4 leading-tight">Charities face declining long-term donor engagement and growing distrust, particularly among younger generations. While Gen Z shows strong interest in social impact, traditional donation models fail to resonate with their behaviours and expectations.</p>
-                                </div>
-                                <div class="mt-16 p-6 yellow-bg hard-shadow-sm rotate-reverse">
-                                    <h3 class="text-2xl font-bold uppercase mb-2">Key Question</h3>
-                                    <p class="text-2xl font-black italic">How might charities shift from transactional fundraising to relationship-based engagement that nurtures future giving?</p>
-                                </div>
-                            </div>
-                        </section>
-
-                        <!-- SECTION 2: DISCOVERY & INSIGHTS -->
-                        <section class="grid grid-cols-12 gap-6">
-                            <div class="col-span-12 lg:col-span-5 blue-bg content-block-swiss hard-shadow">
-                                <div class="genz-tag bg-white text-black">02 / RESEARCH</div>
-                                <h2 class="text-6xl font-black uppercase leading-none mb-6">DISCOVERY &<br>INSIGHTS</h2>
-                                <div class="mt-12 space-y-8">
-                                    <div>
-                                        <h3 class="text-2xl font-bold uppercase mb-4">Methodology</h3>
-                                        <ul class="list-disc list-inside space-y-1 text-lg">
-                                            <li>Secondary research</li>
-                                            <li>Quantitative survey (42 Gen Z participants)</li>
-                                            <li>In-depth interviews (15 users + 2 charities + 2 communities)</li>
-                                        </ul>
-                                    </div>
-                                    <div class="grid grid-cols-3 gap-4 pt-8 border-t border-white/30">
-                                        <div class="text-center">
-                                            <div class="text-4xl font-black">42</div>
-                                            <div class="text-[10px] uppercase font-bold">Survey</div>
-                                        </div>
-                                        <div class="text-center">
-                                            <div class="text-4xl font-black">15</div>
-                                            <div class="text-[10px] uppercase font-bold">Intrvw</div>
-                                        </div>
-                                        <div class="text-center">
-                                            <div class="text-4xl font-black">2+2</div>
-                                            <div class="text-[10px] uppercase font-bold">NGOs</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-span-12 lg:col-span-7 space-y-6">
-                                <div class="bg-white p-4 hard-shadow-sm flex flex-col md:flex-row gap-6 items-center">
-                                    <div class="w-full md:w-1/2">
-                                        <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481522/image_39_yhwxdy.jpg" alt="Survey Data" class="w-full grayscale hover:grayscale-0 transition-all duration-1000 cursor-pointer" onclick="window.open('https://www.dropbox.com/scl/fi/j8jio0dojlte0nhoc12it/_4-1-2026_143442_docs.google.com.pdf?rlkey=em1oj9f8uxn2ldixz1eo66rkt&st=7kne6xld&dl=0')">
-                                    </div>
-                                    <div class="w-full md:w-1/2 text-xs">
-                                        <p class="mb-4 font-bold uppercase">Click image to view full survey data →</p>
-                                        <ul class="space-y-2 opacity-70">
-                                            <li>• I trust and support them</li>
-                                            <li>• I support goals but doubt transparency</li>
-                                            <li>• I feel distant or disconnected</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="content-block-swiss hard-shadow-sm p-6">
-                                        <h4 class="blue-text font-bold uppercase mb-4">Charity Insights</h4>
-                                        <ul class="text-sm space-y-3">
-                                            <li class="flex gap-2 font-bold"><span class="bg-blue-500 text-white px-1">01</span> Monetary & regular giving needs.</li>
-                                            <li class="flex gap-2 font-bold"><span class="bg-blue-500 text-white px-1">02</span> People involvement & recruitment costs.</li>
-                                        </ul>
-                                    </div>
-                                    <div class="content-block-swiss hard-shadow-sm p-6">
-                                        <h4 class="blue-text font-bold uppercase mb-4">Young Adult Reality</h4>
-                                        <div class="text-sm space-y-4">
-                                            <p><strong>Trust Deficit:</strong> Funding flows are a "black box".</p>
-                                            <p><strong>Need for Agency:</strong> Want to contribute skills.</p>
-                                            <p><strong>Peer-driven Trust:</strong> Relying on community networks.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <!-- SECTION 3: OPPORTUNITY -->
-                        <section class="relative py-12">
-                            <div class="blue-bg hard-shadow p-12 lg:p-24 text-center">
-                                <div class="genz-tag bg-white text-black mb-6">03 / OPPORTUNITY</div>
-                                <h2 class="text-5xl md:text-7xl font-black uppercase mb-12">THE OPPORTUNITY</h2>
-                                <p class="text-2xl md:text-3xl max-w-4xl mx-auto font-bold leading-tight uppercase">
-                                    How might charities shift from transactional fundraising to relationship-based engagement that nurtures future giving?
-                                </p>
-                            </div>
-                        </section>
-
-                        <!-- SECTION 4: THE PIVOT -->
-                        <section class="grid grid-cols-12 gap-6 items-center">
-                            <div class="col-span-12 lg:col-span-4 z-10">
-                                <div class="content-block-swiss hard-shadow rotate-slight">
-                                    <div class="genz-tag">STRATEGY</div>
-                                    <h2 class="text-4xl font-black uppercase">STRATEGY<br>PIVOT</h2>
-                                    <div class="mt-6 space-y-4 text-sm">
-                                        <p>Rather than building new platforms, this project explores how existing charity infrastructures can evolve.</p>
-                                        <p class="font-bold blue-text text-base">Key insight: Young people engage more through communities than institutions.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-span-12 lg:col-span-8 grid grid-cols-2 gap-4">
-                                <div class="bg-black text-white p-8 hard-shadow flex flex-col justify-center">
-                                    <p class="text-sm uppercase mb-4 opacity-50 font-bold">Strategic Shift:</p>
-                                    <p class="text-2xl font-black mb-4 uppercase">Infrastructure Evolution</p>
-                                    <p class="text-3xl font-black text-blue-400 uppercase">EMPOWER EXISTING COMMUNITIES.</p>
-                                    <p class="mt-8 text-[10px] tracking-widest opacity-50 font-bold">ECOSYSTEM ACTIVATION</p>
-                                </div>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481243/IMG_9667_1_it7kov.jpg" class="w-full h-full object-cover hard-shadow-sm grayscale hover:grayscale-0 transition-all duration-1000">
-                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481242/IMG_9666_1_msftsz.jpg" class="w-full h-full object-cover hard-shadow-sm grayscale hover:grayscale-0 transition-all duration-1000">
-                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481233/A4_-_1_ulv24c.png" class="w-full h-full object-cover hard-shadow-sm grayscale hover:grayscale-0 transition-all duration-1000">
-                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481233/A4_-_3_nuqsdv.png" class="w-full h-full object-cover hard-shadow-sm grayscale hover:grayscale-0 transition-all duration-1000">
-                                </div>
-                            </div>
-                        </section>
-
-                        <!-- SECTION 5: SOLUTION SYSTEM -->
-                        <section class="space-y-12">
-                            <div class="text-center">
-                                <h2 class="text-6xl font-black uppercase italic">THE <span class="blue-text">SOLUTION</span></h2>
-                                <p class="max-w-4xl mx-auto text-xl font-bold border-l-4 border-blue-500 pl-6 text-left mt-8 uppercase">
-                                    A charity–community collaboration framework:
-                                </p>
-                                <ul class="max-w-4xl mx-auto text-left list-none mt-4 space-y-2 text-lg font-medium opacity-80">
-                                    <li class="flex gap-2">Embedded partnership pathways within existing charity websites.</li>
-                                    <li class="flex gap-2">Simplified onboarding for student societies and grassroots communities.</li>
-                                    <li class="flex gap-2">Event-based engagement models that build emotional investment over time.</li>
-                                </ul>
-                            </div>
-                            <div class="bg-white p-4 hard-shadow">
-                                <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770511617/Group_46_bhlqot.jpg" alt="Collaboration Model Diagram" class="w-full">
-                            </div>
-                            <div class="grid grid-cols-12 gap-10 mt-20 items-stretch">
-                                <div class="col-span-12 md:col-span-8 flex flex-col">
-                                    <div class="bg-white p-10 hard-shadow h-full flex items-center justify-center">
-                                        <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481925/Group_63_jmhcnm.jpg" alt="Cycle" class="w-full h-auto object-contain">
-                                    </div>
-                                    <div class="mt-4 border-l-4 border-black pl-4">
-                                        <p class="text-xs font-black uppercase tracking-tighter">System Loop</p>
-                                        <p class="text-[10px] opacity-50 font-bold uppercase">Building Emotional Connection</p>
-                                    </div>
-                                </div>
-                                <div class="col-span-12 md:col-span-4 flex flex-col">
-                                    <div class="bg-white p-8 hard-shadow-sm h-full flex flex-col justify-center items-center">
-                                        <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770481924/Group_62_tsfeyh.jpg" alt="Stakeholder" class="w-full h-auto max-w-[85%]">
-                                    </div>
-                                    <div class="mt-4 bg-black text-white p-3 text-center">
-                                        <p class="text-[10px] font-bold uppercase tracking-widest">Stakeholder Ecosystem</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <!-- SECTION 6: DELIVERABLES & PROTOTYPE -->
-                        <section class="space-y-12">
-                            <h2 class="text-6xl font-black uppercase border-b-4 border-black inline-block">DELIVERABLES</h2>
-                            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                                <div class="lg:col-span-4">
-                                    <h3 class="text-2xl font-bold uppercase mb-4">User Journey</h3>
-                                    <p class="text-sm mb-8">Visualizing the path from first friend sharing to deep engagement and eventual voluntary donation.</p>
-                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770483061/unnamed_2_1_o4apoe.jpg" class="w-full hard-shadow-sm grayscale hover:grayscale-0 transition-all duration-1000">
-                                </div>
-                                <div class="lg:col-span-8">
-                                    <h3 class="text-2xl font-bold uppercase mb-4">Prototype Video</h3>
-                                    <div class="hard-shadow bg-black overflow-hidden aspect-video">
-                                        <video controls loop muted playsinline class="w-full h-full">
-                                            <source src="https://res.cloudinary.com/dhonki8qe/video/upload/v1770483477/prototype_gviesy.mp4" type="video/mp4">
-                                        </video>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <!-- SECTION 7: IMPACT & REFLECTION -->
-                        <section class="grid grid-cols-12 gap-6 pb-24">
-                            <div class="col-span-12 lg:col-span-7 content-block-swiss hard-shadow yellow-bg">
-                                <div class="genz-tag bg-black text-white">07 / IMPACT</div>
-                                <h2 class="text-6xl font-black uppercase mb-6">OUTCOME &<br>IMPACT</h2>
-                                <div class="mt-8 space-y-6">
-                                    <div class="flex gap-4 border-b border-black/10 pb-4">
-                                        <p class="text-lg font-bold">Moves charity engagement from one-off donations → ongoing participation.</p>
-                                    </div>
-                                    <div class="flex gap-4 border-b border-black/10 pb-4">
-                                        <p class="text-lg font-bold">Creates scalable collaboration channels between institutions and youth communities.</p>
-                                    </div>
-                                    <div class="flex gap-4 border-b border-black/10 pb-4">
-                                        <p class="text-lg font-bold">Strengthens long-term trust-building mechanisms.</p>
-                                    </div>
-                                </div>
-                                <div class="mt-12 p-6 bg-white hard-shadow-sm">
-                                    <h4 class="blue-text font-bold uppercase">Project Reflection Video</h4>
-                                    <div class="mt-4 aspect-video bg-black">
-                                        <iframe class="w-full h-full" src="https://www.youtube.com/embed/g28FFW2HxCc?rel=0" frameborder="0" allowfullscreen></iframe>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-span-12 lg:col-span-5 flex flex-col justify-end">
-                                <div class="p-12 border-4 border-black text-right rotate-reverse bg-white">
-                                    <p class="text-5xl font-black mb-4 italic uppercase">NEXT?</p>
-                                    <p class="text-sm uppercase font-bold tracking-widest">Beyond donation amounts, how can emotional recognition be quantified as long-term brand value?</p>
-                                </div>
-                            </div>
-                        </section>
-                    </main>
-                </div>
-
-                <!-- CUSTOM SECTION: PAW-TO-PAW CAT SWISS STYLE -->
-                <div v-else-if="currentProject.id === 'cat-aid'" class="w-full bg-[#F5F5F5] text-black font-sans pb-24">
-                    <!-- 01 Problem Framing -->
-                    <section class="py-16 px-8 border-b border-black/10">
-                        <div class="paw-swiss-grid">
-                            <div class="col-span-1 hidden md:block">
-                                <span class="text-6xl font-black opacity-10">01</span>
-                            </div>
-                            <div class="col-span-11">
-                                <div class="bg-black text-white p-2 inline-block mb-8 font-bold tracking-tighter uppercase">01 — Problem Framing</div>
-                                <div class="grid md:grid-cols-2 gap-12">
-                                    <div class="border-l-4 border-black pl-6">
-                                        <h2 class="text-xl font-bold uppercase mb-4 border-b-2 border-black inline-block">Context</h2>
-                                        <p class="text-sm font-medium leading-relaxed">Rapid growth in pet ownership in China has increased demand for veterinary blood transfusions, yet structured donation systems remain limited. Resources are fragmented, blood type matching is complex, and unregulated markets introduce safety and ethical risks — making emergency donor searches highly stressful for pet owners.</p>
-                                    </div>
-                                    <div class="bg-black text-white p-8 hard-shadow">
-                                        <h2 class="text-xl font-bold uppercase mb-4 border-b-2 border-white inline-block">Design Challenge</h2>
-                                        <div class="mt-4 text-lg font-bold leading-tight">
-                                            How might we:<br>
-                                            <span class="text-[#CFFF5E]">Reduce emergency stress for pet owners?</span><br>
-                                            Build sustainable donor networks instead of one-off matching?
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- 02 Research & Discovery -->
-                    <section class="py-16 px-8 bg-white border-b border-black/10">
-                        <div class="paw-swiss-grid">
-                            <div class="col-span-5 pr-8">
-                                <div class="bg-black text-white p-2 inline-block mb-8 font-bold tracking-tighter uppercase">02 — Research & Discovery</div>
-                                <h2 class="text-xl font-bold uppercase mb-4 border-b-2 border-black inline-block">Methods</h2>
-                                <ul class="space-y-2 mb-12 text-sm font-medium">
-                                    <li>— Interviews with pet owners</li>
-                                    <li>— Veterinary workflow observation</li>
-                                    <li>— Secondary research</li>
-                                </ul>
-                                <div class="mt-16 border-t-2 border-black pt-8">
-                                    <h2 class="text-xl font-bold uppercase mb-4 border-b-2 border-black inline-block">Key Findings</h2>
-                                    <div class="space-y-6">
-                                        <p class="text-sm font-medium">Owners experience panic when searching for donors during emergencies.</p>
-                                        <div class="p-4 accent-green font-bold text-black border-2 border-black hard-shadow-sm">
-                                            Trust and familiarity increase willingness to donate.
-                                        </div>
-                                        <p class="text-sm font-medium">Existing systems focus on transactional matching rather than relationship building.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-span-7 flex items-center justify-center">
-                                <div class="relative w-full">
-                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770657879/1_vaqhp8.jpg" alt="Research" class="w-full border-2 border-black hard-shadow grayscale hover:grayscale-0 transition-all duration-700">
-                                    <div class="absolute -bottom-4 -right-4 bg-[#ED3131] text-white px-4 py-1 text-xs font-bold rotate-3">FIELD WORK 01</div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- 03 Key Insights -->
-                    <section class="py-16 px-8 border-b border-black/10">
-                        <div class="bg-black text-white p-2 inline-block mb-12 font-bold tracking-tighter uppercase">03 — Key Insights</div>
-                        <div class="paw-swiss-grid">
-                            <div class="col-span-4 border-2 border-black p-6 bg-white relative overflow-hidden hard-shadow-sm">
-                                <h2 class="text-sm font-bold uppercase border-b border-black mb-4 inline-block">Insight 01</h2>
-                                <p class="font-bold">Emergency-only systems create emotional pressure.</p>
-                            </div>
-                            <div class="col-span-4 border-2 border-black p-6 accent-green relative hard-shadow-sm">
-                                <h2 class="text-sm font-bold uppercase border-b border-black mb-4 inline-block">Insight 02 — Two-way Matching</h2>
-                                <p class="text-sm font-bold mb-4">Two-way matching increases trust and participation.</p>
-                                <div class="text-xs font-bold uppercase border-b border-black mb-2">Key elements:</div>
-                                <ul class="text-xs space-y-1 font-bold">
-                                    <li>• Same blood type compatibility</li>
-                                    <li>• Geographic proximity</li>
-                                    <li>• Ongoing relationship building</li>
-                                </ul>
-                                <div class="mt-6 p-2 bg-black text-white text-[10px] uppercase font-bold text-center">Shift: Reactive → Relationship-based</div>
-                            </div>
-                            <div class="col-span-4 border-2 border-black p-6 bg-white hard-shadow-sm">
-                                <h2 class="text-sm font-bold uppercase border-b border-black mb-4 inline-block">Insight 03</h2>
-                                <p class="font-bold underline decoration-4 decoration-[#ED3131]">Community networks reduce risk during emergencies.</p>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- 04 Behavioural Design Strategy -->
-                    <section class="py-16 px-8 bg-[#CFFF5E] border-b border-black/10">
-                        <div class="paw-swiss-grid">
-                            <div class="col-span-1 paw-vertical-text font-black text-4xl opacity-20 hidden md:block">STRATEGY</div>
-                            <div class="col-span-11">
-                                <div class="bg-black text-white p-2 inline-block mb-8 font-bold tracking-tighter uppercase">⭐ 04 — Behavioural Design Strategy</div>
-                                <h2 class="text-2xl font-bold uppercase mb-6 border-b-2 border-black inline-block">Friendship-based Donor Network</h2>
-                                <p class="text-xl font-bold mb-12 max-w-2xl leading-tight">Instead of viewing blood donation as a medical transaction, the system reframes participation as relationship-building.</p>
-                                <div class="grid md:grid-cols-3 gap-8">
-                                    <div class="border-2 border-black p-4 bg-white hard-shadow-sm">
-                                        <div class="text-xs font-black mb-2 opacity-50">PRINCIPLE 01</div>
-                                        <p class="text-sm font-bold">Familiarity reduces hesitation.</p>
-                                    </div>
-                                    <div class="border-2 border-black p-4 bg-white hard-shadow-sm">
-                                        <div class="text-xs font-black mb-2 opacity-50">PRINCIPLE 02</div>
-                                        <p class="text-sm font-bold">Social reciprocity increases willingness to help.</p>
-                                    </div>
-                                    <div class="border-2 border-black p-4 bg-white hard-shadow-sm">
-                                        <div class="text-xs font-black mb-2 opacity-50">PRINCIPLE 03</div>
-                                        <p class="text-sm font-bold">Peer connection transforms obligation into community support.</p>
-                                    </div>
-                                </div>
-                                <div class="mt-12 bg-black text-white p-8 hard-shadow">
-                                    <h2 class="text-xl font-bold uppercase mb-4 border-b-2 border-white inline-block">Key Mechanism</h2>
-                                    <p class="font-medium">Cats with compatible blood types and nearby locations form “friend networks.” Owners can build ongoing relationships through daily interaction. Emergency support becomes a by-product of existing social ties.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- 05 Concept Evolution -->
-                    <section class="py-16 px-8 border-b border-black/10">
-                        <div class="bg-black text-white p-2 inline-block mb-12 font-bold tracking-tighter uppercase">05 — Concept Evolution</div>
-                        <div class="paw-swiss-grid">
-                            <div class="col-span-4">
-                                <h2 class="text-xl font-bold uppercase mb-6 border-b-2 border-black inline-block">Iteration Process</h2>
-                                <div class="space-y-6 text-sm font-bold">
-                                    <div class="flex gap-4"><span>EARLY:</span><span>Blood matching platform (utility-only)</span></div>
-                                    <div class="flex gap-4 text-[#ED3131]"><span>→</span><span>Feedback identified lack of trust</span></div>
-                                    <div class="flex gap-4"><span>FINAL:</span><span>Social-support ecosystem</span></div>
-                                    <p class="pt-8 border-t border-black italic opacity-70">The project evolved from a medical utility tool into a social-support ecosystem.</p>
-                                </div>
-                            </div>
-                            <div class="col-span-8 grid grid-cols-2 gap-4">
-                                <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770657873/3_dfyfg0.jpg" class="border-2 border-black collage-img hard-shadow-sm grayscale hover:grayscale-0 transition-all duration-1000" alt="Evolution 1">
-                                <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770657872/4_yrl0wt.jpg" class="border-2 border-black collage-img mt-12 hard-shadow-sm grayscale hover:grayscale-0 transition-all duration-1000" alt="Evolution 2">
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- 06 & 07 Service Design & Journey -->
-                    <section class="py-16 px-8 bg-white border-b border-black/10">
-                        <div class="paw-swiss-grid mb-24">
-                            <div class="col-span-12">
-                                <div class="bg-black text-white p-2 inline-block mb-8 font-bold tracking-tighter uppercase">06 — Service Design Solution</div>
-                                <div class="flex flex-wrap gap-8 mb-8 uppercase font-bold text-xs">
-                                    <span>• Emergency matching system</span>
-                                    <span>• Peer friendship network</span>
-                                    <span>• Owner community interaction</span>
-                                </div>
-                                <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770657884/9_axfzfc.jpg" class="w-full border-2 border-black hard-shadow" alt="Service Solution">
-                            </div>
-                        </div>
-                        <div class="paw-swiss-grid">
-                            <div class="col-span-4">
-                                <div class="bg-black text-white p-2 inline-block mb-8 font-bold tracking-tighter uppercase">07 — User Journey / Service Blueprint</div>
-                                <div class="space-y-8">
-                                    <div>
-                                        <h2 class="accent-red px-2 text-white border-none font-bold uppercase mb-2 inline-block">Before</h2>
-                                        <div class="flex items-center gap-2 text-sm font-bold uppercase">panic <span class="text-[#ED3131]">→</span> search <span class="text-[#ED3131]">→</span> uncertainty</div>
-                                    </div>
-                                    <div>
-                                        <h2 class="accent-green px-2 text-black border-none font-bold uppercase mb-2 inline-block">After</h2>
-                                        <div class="flex items-center gap-2 text-sm font-bold uppercase">network <span class="text-[#CFFF5E]">→</span> quick contact <span class="text-[#CFFF5E]">→</span> faster response</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-span-8">
-                                <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770657885/8_iqemou.jpg" class="w-full border-2 border-black hard-shadow grayscale hover:grayscale-0 transition-all duration-700" alt="Blueprint">
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- 08 Interaction / Interface Design -->
-                    <section class="py-16 px-8 bg-black text-white">
-                        <div class="bg-[#CFFF5E] text-black p-2 inline-block mb-12 font-bold tracking-tighter uppercase">08 — Interaction / Interface Design</div>
-                        <div class="flex flex-col gap-12 items-center max-w-5xl mx-auto">
-                            <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770662124/220_vyrwse.png" class="w-full border-2 border-white/10 collage-img hard-shadow" alt="Main Interface">
-                            <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770657878/5_ffmwen.jpg" class="w-full border-2 border-white/10 collage-img hard-shadow" alt="Interface Set 1">
-                            <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770661016/7_cis1nj.png" class="w-full border-2 border-white/10 collage-img hard-shadow" alt="Interface Set 2">
-                            <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770661019/Group_7140_d19zct.png" class="w-full border-2 border-white/10 collage-img hard-shadow" alt="Components">
-                        </div>
-                    </section>
-
-                    <!-- 09 Reflection & Impact -->
-                    <footer class="p-16 paw-swiss-grid bg-white border-t-4 border-black">
-                        <div class="col-span-4">
-                            <div class="bg-black text-white p-2 inline-block mb-8 font-bold tracking-tighter uppercase">09 — Reflection & Impact</div>
-                        </div>
-                        <div class="col-span-8 grid gap-12 text-sm font-medium">
-                            <div class="border-t border-black pt-4">
-                                <div class="text-xs font-black opacity-40 mb-2 uppercase">REF 01</div>
-                                <h2 class="text-sm font-bold border-none mb-2 uppercase">Reflection 01: Quantifying Social Impact</h2>
-                                <p class="font-bold mb-4 italic">Design is not only about pixels, but about measurable outcomes.</p>
-                                <p class="opacity-70">If implemented in real-world operations, I would establish Trust Metrics to evaluate impact. For example, analysing the correlation between community interaction frequency and emergency response time could help validate whether social relationships effectively reduce blood-matching search duration.</p>
-                            </div>
-                            <div class="border-t border-black pt-4">
-                                <div class="text-xs font-black opacity-40 mb-2 uppercase">REF 02</div>
-                                <h2 class="text-sm font-bold border-none mb-2 uppercase">Reflection 02: Balancing Privacy and Accessibility</h2>
-                                <p class="opacity-70">Building a community-based network raises important questions about balancing geographic visibility with owner privacy. Moving forward, I would explore privacy-first UX approaches, such as approximate location sharing or layered information disclosure, to maintain efficiency while ensuring safe boundaries.</p>
-                            </div>
-                            <div class="border-t border-black pt-4">
-                                <div class="text-xs font-black opacity-40 mb-2 uppercase">REF 03</div>
-                                <h2 class="text-sm font-bold border-none mb-2 uppercase">Reflection 03: Future Scalability</h2>
-                                <p class="opacity-70">This model demonstrates strong scalability and transferability. It could expand from cat donor networks to rare dog breeds or even rare disease communities. Through this project, I realised that the core of service design is not solving isolated pain points, but reshaping collaborative ecosystems.</p>
-                            </div>
-                        </div>
-                        <div class="col-span-12 mt-24 flex justify-end items-center opacity-50 text-[10px] font-black tracking-[0.2em] uppercase">
-                            <span>© 2024 PAW-TO-PAW CASE STUDY</span>
-                        </div>
-                    </footer>
-                </div>
-
-                <!-- CUSTOM SECTION: CO-VISION CHESS SWISS STYLE -->
-                <div v-else-if="currentProject.id === 'urban-futures'" class="w-full bg-[#F7FEFF] text-black font-sans pb-24">
-                    <!-- 01 Problem Framing -->
-                    <section class="py-16 px-8 md:px-20 border-b border-black/10">
-                        <div class="cvc-swiss-grid items-start">
-                            <div class="col-span-1 cvc-vertical-text hidden md:block">
-                                <span class="text-4xl font-black opacity-20">01 — PROBLEM</span>
-                            </div>
-                            <div class="col-span-11 grid grid-cols-1 md:grid-cols-11 gap-8">
-                                <div class="col-span-11 md:col-span-5">
-                                    <h2 class="cvc-section-title mb-8">01 — Problem Framing: The “Silent” Majority</h2>
-                                    <div class="mb-12">
-                                        <span class="cvc-sub-title">Context</span>
-                                        <p class="text-lg leading-relaxed font-medium">China’s urbanisation rate has reached 64%, yet community planning remains largely driven by top-down decision-making structures. Despite policy efforts to encourage participation, residents often feel disconnected from shaping their local futures.</p>
-                                    </div>
-                                </div>
-                                <div class="col-span-11 md:col-span-6 relative">
-                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770713431/2_rd6kjn.png" alt="Context" class="w-full cvc-border-thin collage-img hard-shadow-sm">
-                                    <div class="absolute -bottom-4 -right-4 bg-[var(--cvc-yellow)] p-2 cvc-border-thin font-bold text-xs hidden md:block">URBANIZATION DATA VIZ</div>
-                                </div>
-                                <div class="col-span-11 mt-12">
-                                    <div class="cvc-hmw-card cvc-border-thin cvc-hard-shadow">
-                                        <div class="cvc-hmw-tag">Design Challenge</div>
-                                        <p class="text-4xl md:text-5xl font-black italic leading-tight uppercase">How might we enable meaningful participation in community futures?</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- 02 Research & Discovery -->
-                    <section class="py-20 px-8 md:px-20 bg-white">
-                        <div class="cvc-swiss-grid mb-12">
-                            <div class="col-span-12 md:col-span-4">
-                                <h2 class="cvc-section-title mb-6">02 — Research & Discovery</h2>
-                            </div>
-                            <div class="col-span-12 md:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="p-6 cvc-border-thin bg-white">
-                                    <span class="cvc-sub-title">Methods</span>
-                                    <ul class="font-bold space-y-2 text-sm uppercase">
-                                        <li>— Rapid exploratory interviews</li>
-                                        <li>— Stakeholder interviews</li>
-                                        <li>— Desk research</li>
-                                    </ul>
-                                </div>
-                                <div class="p-6 cvc-border-thin bg-[var(--cvc-primary)] text-white">
-                                    <span class="cvc-sub-title text-black">Observed Pain Points</span>
-                                    <div class="space-y-4 text-sm font-medium">
-                                        <p><strong>Cognitive Gap:</strong> Residents struggle to imagine future scenarios; discussions rely on abstract terminology.</p>
-                                        <p><strong>Social Pressure:</strong> Offline meetings are influenced by dominant voices or small groups.</p>
-                                        <p><strong>Participation Apathy:</strong> Residents feel their input does not lead to real change.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770713431/1_rv9woo.png" class="w-full cvc-border-thin collage-img hard-shadow-sm grayscale hover:grayscale-0 transition-all duration-700">
-                            <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770713431/3_o5wu6y.png" class="w-full cvc-border-thin collage-img hard-shadow-sm mt-12 md:mt-24 grayscale hover:grayscale-0 transition-all duration-700">
-                        </div>
-                    </section>
-
-                    <!-- 03 Key Insights -->
-                    <section class="cvc-swiss-grid bg-black text-white p-10 md:p-20 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-4 opacity-10 text-8xl font-black select-none">INSIGHTS</div>
-                        <div class="col-span-12 mb-10">
-                            <h2 class="cvc-section-title text-[var(--cvc-mint)]">03 — Key Insights</h2>
-                        </div>
-                        <div class="col-span-12 md:col-span-4 border-l-2 border-[var(--cvc-primary)] pl-6 mb-8 md:mb-0">
-                            <h3 class="text-xl font-black mb-2 uppercase">Imagination Needs Tangible Anchors</h3>
-                            <p class="text-sm text-gray-300 mb-4 font-medium">Abstract future discussions fail because residents lack concrete entry points.</p>
-                            <p class="text-xs font-bold uppercase tracking-widest text-[var(--cvc-primary)]">Design implication: translate technology into everyday life scenarios.</p>
-                        </div>
-                        <div class="col-span-12 md:col-span-4 border-l-2 border-[var(--cvc-yellow)] pl-6 mb-8 md:mb-0">
-                            <h3 class="text-xl font-black mb-2 uppercase">Participation Requires Psychological Safety</h3>
-                            <p class="text-sm text-gray-300 mb-4 font-medium">Social dynamics reduce honest expression.</p>
-                            <p class="text-xs font-bold uppercase tracking-widest text-[var(--cvc-yellow)]">Design implication: introduce anonymous and structured interaction.</p>
-                        </div>
-                        <div class="col-span-12 md:col-span-4 border-l-2 border-[var(--cvc-mint)] pl-6">
-                            <h3 class="text-xl font-black mb-2 uppercase">Engagement Emerges Through Playful Structures</h3>
-                            <p class="text-sm text-gray-300 mb-4 font-medium">Traditional meetings create pressure; playful formats reduce cognitive load.</p>
-                            <p class="text-xs font-bold uppercase tracking-widest text-[var(--cvc-mint)]">Design implication: gamification as behavioural catalyst.</p>
-                        </div>
-                    </section>
-
-                    <!-- 04 Design Strategy -->
-                    <section class="py-20 px-8 md:px-20 border-b border-black/10">
-                        <div class="cvc-swiss-grid mb-12">
-                            <div class="col-span-12">
-                                <h2 class="cvc-section-title mb-8">04 — Design Strategy</h2>
-                            </div>
-                            <div class="col-span-12 md:col-span-5">
-                                <p class="font-bold text-lg mb-8 leading-relaxed">Rather than relying on traditional meeting formats, the project introduces gamification to reduce participation barriers and encourage collaborative engagement.</p>
-                            </div>
-                            <div class="col-span-12 md:col-span-7 flex flex-wrap gap-4 items-start">
-                                <div class="border-l-4 border-[var(--cvc-primary)] pl-4 max-w-xs mb-4">
-                                    <h4 class="font-black uppercase">AI-Driven Scenarios</h4>
-                                    <p class="text-xs font-bold">AI cards translate abstract technologies into relatable everyday scenarios.</p>
-                                </div>
-                                <div class="border-l-4 border-[var(--cvc-mint)] pl-4 max-w-xs mb-4">
-                                    <h4 class="font-black uppercase">Phygital Sync</h4>
-                                    <p class="text-xs font-bold">NFC-enabled pieces connect the physical game board with an online platform.</p>
-                                </div>
-                                <div class="border-l-4 border-[var(--cvc-yellow)] pl-4 max-w-xs mb-4">
-                                    <h4 class="font-black uppercase">Neutral Debate</h4>
-                                    <p class="text-xs font-bold">AI acts as a neutral third-party facilitator, analysing pros and cons.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770715281/Group_7151_ctusgj.png" class="w-full h-auto collage-img">
-                    </section>
-
-                    <!-- 05 The Workflow -->
-                    <section class="py-20 px-8 md:px-20 border-b border-black/10">
-                        <div class="flex flex-col md:flex-row justify-between items-end mb-12">
-                            <h2 class="cvc-section-title">05 — The Workflow</h2>
-                            <p class="max-w-md font-bold text-right uppercase text-xs">Guiding users from personal reflection to collective decision-making.</p>
-                        </div>
-                        <div class="cvc-swiss-grid gap-0 cvc-border-thin bg-white hard-shadow-sm">
-                            <div class="col-span-12 md:col-span-3 p-6 border-b md:border-b-0 md:border-r border-black hover:bg-[var(--cvc-mint)] transition-colors">
-                                <span class="text-4xl font-black mb-4 block opacity-20">01</span>
-                                <h4 class="font-black mb-2 uppercase">Empathy</h4>
-                                <p class="text-xs font-bold">Participants start from personal lived experiences and everyday pain points.</p>
-                            </div>
-                            <div class="col-span-12 md:col-span-3 p-6 border-b md:border-b-0 md:border-r border-black hover:bg-[var(--cvc-yellow)] transition-colors">
-                                <span class="text-4xl font-black mb-4 block opacity-20">02</span>
-                                <h4 class="font-black mb-2 uppercase">Ideation</h4>
-                                <p class="text-xs font-bold">Policy cards and technology cards help translate individual needs into visions.</p>
-                            </div>
-                            <div class="col-span-12 md:col-span-3 p-6 border-b md:border-b-0 md:border-r border-black hover:bg-[var(--cvc-primary)] hover:text-white transition-colors">
-                                <span class="text-4xl font-black mb-4 block opacity-20">03</span>
-                                <h4 class="font-black mb-2 uppercase">Consensus</h4>
-                                <p class="text-xs font-bold">AI-assisted debating and anonymous voting filter noise and surface priorities.</p>
-                            </div>
-                            <div class="col-span-12 md:col-span-3 p-6 hover:bg-black hover:text-white transition-colors">
-                                <span class="text-4xl font-black mb-4 block opacity-20">04</span>
-                                <h4 class="font-black mb-2 uppercase">Output</h4>
-                                <p class="text-xs font-bold">The system generates structured community planning proposals based on input.</p>
-                            </div>
-                        </div>
-                        <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770713432/4_bpwfac.png" class="w-full cvc-border-thin collage-img hard-shadow-sm mt-12">
-                    </section>
-
-                    <!-- 06 Iteration -->
-                    <section class="py-20 px-8 md:px-20 border-b border-black/10">
-                        <div class="cvc-swiss-grid mb-10">
-                            <div class="col-span-12 md:col-span-6">
-                                <h2 class="cvc-section-title mb-6">06 — Iteration: From Physical to Phygital</h2>
-                            </div>
-                            <div class="col-span-12 md:col-span-6 space-y-6">
-                                <div><span class="cvc-sub-title">Feedback Loop</span><p class="text-sm italic font-bold">Early workshops revealed concerns about group influence affecting voting outcomes.</p></div>
-                                <div><span class="cvc-sub-title" style="background-color: var(--cvc-mint);">The Pivot</span><p class="text-sm leading-relaxed font-bold">A mobile application module was introduced to enable remote participation and reduce social pressure. A data dashboard visualises community sentiment as a “public opinion heatmap.”</p></div>
-                            </div>
-                        </div>
-                        <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770713435/5_iqgsdq.png" class="w-full cvc-border-thin hard-shadow collage-img">
-                    </section>
-
-                    <!-- 07 Final Outcome -->
-                    <section class="py-20 px-8 md:px-20">
-                        <h2 class="cvc-section-title mb-12 text-center">07 — Final Outcome & Impact</h2>
-                        <div class="space-y-8 mb-20">
-                            <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770713433/6_cqzmvt.png" class="w-full cvc-border-thin shadow-2xl collage-img transition-all duration-1000">
-                            <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770713436/Group_7142_g9eosf.png" class="w-full cvc-border-thin shadow-2xl collage-img transition-all duration-1000">
-                        </div>
-                        <div class="cvc-swiss-grid pb-20">
-                            <div class="col-span-12 md:col-span-8 bg-white cvc-border-thin p-10 cvc-hard-shadow">
-                                <h3 class="cvc-section-title text-3xl mb-8">The Offering Map</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                    <div><h4 class="text-xl font-black border-b-4 border-[var(--cvc-mint)] inline-block mb-4 uppercase">For Residents</h4><ul class="space-y-2 font-bold text-sm uppercase"><li>• Low barrier to expression</li><li>• Immediate participation feedback</li><li>• Inclusive engagement experience</li></ul></div>
-                                    <div><h4 class="text-xl font-black border-b-4 border-[var(--cvc-yellow)] inline-block mb-4 uppercase">For Governance</h4><ul class="space-y-2 font-bold text-sm uppercase"><li>• Structured public opinion data</li><li>• Reduced governance friction</li><li>• Evidence-based community insights</li></ul></div>
-                                </div>
-                                <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1770713433/Group_7149_ueuaev.png" class="w-full mt-10 border-t pt-10 collage-img">
-                            </div>
-                            <div class="col-span-12 md:col-span-4 bg-[var(--cvc-primary)] p-10 cvc-border-thin flex flex-col justify-between">
-                                <div><h3 class="text-2xl font-black text-white mb-8 uppercase">Skills Demonstrated</h3><ul class="space-y-4 text-white font-black text-xl uppercase"><li class="flex items-center gap-2"><span class="w-4 h-4 bg-white rotate-45 block"></span> User Research</li><li class="flex items-center gap-2"><span class="w-4 h-4 bg-[var(--cvc-mint)] rotate-45 block"></span> Service Design</li><li class="flex items-center gap-2"><span class="w-4 h-4 bg-[var(--cvc-yellow)] rotate-45 block"></span> Rapid Prototyping</li><li class="flex items-center gap-2"><span class="w-4 h-4 bg-black rotate-45 block"></span> Stakeholder Management</li></ul></div>
-                                <div class="mt-20"><p class="text-xs font-bold uppercase tracking-widest opacity-60">Co-Vision Chess Project © 2024</p></div>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-
-                <!-- CUSTOM SECTION: BEICANGMEN WAYFINDING GALLERY -->
-                <div v-else-if="currentProject.id === 'beicangmen'" class="w-full bc-gallery pb-24">
-                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772452658/%E7%94%BB%E6%9D%BF_86_6x_zjiui4.png" alt="[作品 1]">
-                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772452658/%E7%94%BB%E6%9D%BF_86_%E5%89%AF%E6%9C%AC_6x_xaptgr.png" alt="[作品 2]">
-                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772451277/%E7%94%BB%E6%9D%BF_86_%E5%89%AF%E6%9C%AC_2_6x_y6kngs.png" alt="[作品 3]">
-                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772451267/%E7%94%BB%E6%9D%BF_86_%E5%89%AF%E6%9C%AC_3_6x_uss8pd.png" alt="[作品 4]">
-                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772451268/%E7%94%BB%E6%9D%BF_86_%E5%89%AF%E6%9C%AC_4_6x_yglqrf.png" alt="[作品 5]">
-                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772451269/%E7%94%BB%E6%9D%BF_86_%E5%89%AF%E6%9C%AC_5_6x_xlrozb.png" alt="[作品 6]">
-                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772451269/%E7%94%BB%E6%9D%BF_86_%E5%89%AF%E6%9C%AC_6_6x_ytwbz4.png" alt="[作品 7]">
-                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772451269/%E7%94%BB%E6%9D%BF_86_%E5%89%AF%E6%9C%AC_7_6x_lvhuhh.png" alt="[作品 8]">
-                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772451268/%E7%94%BB%E6%9D%BF_86_%E5%89%AF%E6%9C%AC_8_6x_mul52y.png" alt="[作品 9]">
-                    
-                    <!-- Parallax Segment -->
-                    <div class="bc-parallax-container" id="bc-parallax-section">
-                        <img id="bc-parallax-img" src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772451494/%E8%B5%84%E6%BA%90_3_2x_vtm72z.png" alt="[视差横移图]">
-                    </div>
-
-                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772451267/%E7%94%BB%E6%9D%BF_86_%E5%89%AF%E6%9C%AC_10_6x_xifw9q.png" alt="[作品 10]">
-                </div>
-
-                <!-- CUSTOM SECTION: FULL LUCK POKER SYSTEM -->
-                <div v-else-if="currentProject.id === 'full-luck'" class="w-full bg-void pb-24">
-                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772492010/MacBook_Pro_16__-_12_aop75v.png" class="w-full h-auto block" alt="Hero">
-                    <section class="pkr-main-container" id="pkrSection">
-                        <div class="pkr-viewport" id="pkrCanvas">
-                            <div class="pkr-guide">滚动展开 · 点击牌面居中展示</div>
-                        </div>
-                    </section>
-                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772492011/MacBook_Pro_16__-_13_ga5lvt.png" class="w-full h-auto block" alt="Part 2">
-                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1772492012/MacBook_Pro_16__-_14_nzpoxj.png" class="w-full h-auto block" alt="Part 3">
-                </div>
-
-                <!-- Default Gallery for other projects -->
-                <section v-else class="visual-gallery">
-                    <div v-for="(img, index) in currentProject.gallery" :key="index" class="visual-slot">
-                        <img v-if="img" :src="img" alt="Documentation">
-                    </div>
-                </section>
-
-                <section class="py-32 text-center bg-void">
-                    <button @click="setView('home', '#projects')" class="px-16 py-5 bg-acid text-void font-bold rounded-full hover:scale-105 transition-all duration-500 uppercase tracking-widest text-[10px]" @mouseenter="cursorHover" @mouseleave="cursorLeave">Return to Index</button>
-                </section>
             </div>
         </div>
-    </div>
 
-    <!-- Scripts -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <svg class="rotating-text top-[-60px] right-[-40px] hidden lg:block" viewBox="0 0 200 200">
+            <path id="circlePath" d="M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0" fill="transparent"/>
+            <text font-family="Unbounded" font-weight="900" font-size="12" fill="#414141">
+                <textPath href="#circlePath">COMMUNITY CARE • TRUST DRIVEN • DOGGO GO • </textPath>
+            </text>
+        </svg>
+    </header>
+
+    <main class="max-w-7xl mx-auto space-y-24">
+
+        <!-- 01 Context & Opportunity -->
+        <section>
+            <h2 class="heading-brutal text-4xl mb-10 text-[#414141]">01 — Context & Opportunity</h2>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <div class="md:col-span-4 bg-[#CAECF6] p-10 card-brutal">
+                    <h3 class="font-black text-2xl mb-4 text-[#414141]">Market Landscape</h3>
+                    <p class="text-[#414141] text-sm leading-relaxed">China’s pet industry is rapidly expanding. However, many pet owners face recurring “walking dilemmas” due to overtime work, business travel, or unpredictable schedules.</p>
+                </div>
+                <div class="md:col-span-5 bg-[#F9E76C] p-10 card-brutal">
+                    <h3 class="font-black text-2xl mb-4 text-[#414141]">Core Insight</h3>
+                    <p class="mb-6 text-[#414141] text-sm leading-relaxed">Marketplace data indicates strong unmet demand. Since June, over 105,000 posts offering dog-walking services and 27,000 posts seeking walkers have been published.</p>
+                    <div class="bg-white border-[2px] border-[#414141] p-4 font-black text-center text-[#414141]">
+                        DAILY DEMAND > 5,000 LISTINGS
+                    </div>
+                </div>
+                <div class="md:col-span-3 bg-[#FD9243] p-10 card-brutal">
+                    <h3 class="font-black text-2xl mb-4 text-[#414141]">Positioning</h3>
+                    <p class="text-[#414141] text-sm leading-relaxed">A trust-driven, low-barrier, non-purely-commercial mutual assistance platform.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 02 Competitor Analysis -->
+        <section>
+            <h2 class="heading-brutal text-4xl mb-10 text-[#414141]">02 — Competitor Analysis</h2>
+            <div class="card-brutal overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-[#414141] text-white">
+                                <th class="p-6 border-r border-gray-500 heading-brutal text-sm tracking-wide">Platform</th>
+                                <th class="p-6 border-r border-gray-500 heading-brutal text-sm tracking-wide">Core Strength</th>
+                                <th class="p-6 heading-brutal text-sm tracking-wide">Gap</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm font-medium text-[#414141]">
+                            <tr class="border-b-[2px] border-[#414141]">
+                                <td class="p-6 border-r-[2px] border-[#414141] bg-[#CAECF6] font-black">Rover</td>
+                                <td class="p-6 border-r-[2px] border-[#414141]">Mature review system; pet insurance included</td>
+                                <td class="p-6">High background check fee ($35); high entry barrier</td>
+                            </tr>
+                            <tr class="border-b-[2px] border-[#414141]">
+                                <td class="p-6 border-r-[2px] border-[#414141] bg-[#F9E76C] font-black">PetPie</td>
+                                <td class="p-6 border-r-[2px] border-[#414141]">Clean interface; professional standards</td>
+                                <td class="p-6">Long review process; opaque specialist allocation</td>
+                            </tr>
+                            <tr>
+                                <td class="p-6 border-r-[2px] border-[#414141] bg-[#50A459] text-white font-black">PetHelper</td>
+                                <td class="p-6 border-r-[2px] border-[#414141]">Feature-rich; integrates idle trading</td>
+                                <td class="p-6 text-[#414141]">Weak guarantee system; complex interface</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-6 bg-[#8C70FF] text-white border-t-[2px] border-[#414141] font-black italic text-center text-sm uppercase">
+                    Opportunity: Build a lightweight but trust-intensive platform with transparent onboarding and simplified interaction.
+                </div>
+            </div>
+        </section>
+
+        <!-- 03 User Research & Insights -->
+        <section class="relative">
+            <h2 class="heading-brutal text-4xl mb-10 text-[#414141]">03 — User Research & Insights</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <div class="space-y-6">
+                    <div class="bg-white p-10 card-brutal text-[#414141]">
+                        <h3 class="font-black text-2xl mb-4 underline underline-offset-4 decoration-4 decoration-[#FD9243]">Research Methods</h3>
+                        <ul class="list-none space-y-3 font-bold">
+                            <li class="flex items-center gap-3"><span class="w-2 h-2 bg-[#414141]"></span> Online survey</li>
+                            <li class="flex items-center gap-3"><span class="w-2 h-2 bg-[#414141]"></span> In-depth interviews</li>
+                            <li class="flex items-center gap-3"><span class="w-2 h-2 bg-[#414141]"></span> Real-world experience testing</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-[#50A459] text-white p-10 card-brutal">
+                        <h3 class="font-black text-2xl mb-4 italic">Pain Points: Pet Owners</h3>
+                        <p class="mb-6 text-sm opacity-90 leading-relaxed">Concerned about professionalism, property safety, and unexpected accidents.</p>
+                        <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1771674563/Frame_5_vud2eg.png" alt="Interview Record" class="w-full border-[2px] border-[#414141] bg-white p-1">
+                    </div>
+                </div>
+
+                <div class="flex flex-col justify-start items-start p-10 bg-[#CAECF6] card-brutal overflow-hidden">
+                    <h3 class="font-black text-2xl mb-2 text-[#414141]">ETHNOGRAPHY</h3>
+                    <p class="text-xs font-bold mb-8 text-[#414141] leading-relaxed opacity-80">We conducted ethnographic research by going through the existing dog-walking booking process ourselves to identify pain points.</p>
+                    <div class="img-stack-container">
+                        <img class="stacked-img" src="https://res.cloudinary.com/dhonki8qe/image/upload/v1771674570/1e062ed54f05e847c0aae6f861576795_1_ta4juj.png" alt="Step 1">
+                        <img class="stacked-img" src="https://res.cloudinary.com/dhonki8qe/image/upload/v1771674576/IMG_2468_psrthe.jpg" alt="Step 2">
+                        <img class="stacked-img" src="https://res.cloudinary.com/dhonki8qe/image/upload/v1771674575/IMG_2467_vgz7sn.jpg" alt="Step 3">
+                        <img class="stacked-img" src="https://res.cloudinary.com/dhonki8qe/image/upload/v1771674574/IMG_2464_ybilqb.jpg" alt="Step 4">
+                        <img class="stacked-img" src="https://res.cloudinary.com/dhonki8qe/image/upload/v1771674573/IMG_2463_pq2apt.jpg" alt="Step 5">
+                    </div>
+                    <p class="mt-8 font-black text-[10px] uppercase tracking-widest text-[#414141]">Hover cards to flip through →</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="card-brutal p-8 bg-white border-b-8 border-b-[#FD9243]">
+                    <span class="bg-[#414141] text-white px-2 py-0.5 text-[10px] font-black mb-4 inline-block">01 SAFETY</span>
+                    <h4 class="font-black mb-3 text-[#414141]">High Trust Threshold</h4>
+                    <p class="text-xs opacity-80 leading-relaxed text-[#414141]">Mandatory real-name & student identity authentication to reduce “stranger anxiety.”</p>
+                </div>
+                <div class="card-brutal p-8 bg-white border-b-8 border-b-[#8C70FF]">
+                    <span class="bg-[#414141] text-white px-2 py-0.5 text-[10px] font-black mb-4 inline-block">02 PROFESSIONAL</span>
+                    <h4 class="font-black mb-3 text-[#414141]">Not a Low-Skill Task</h4>
+                    <p class="text-xs opacity-80 leading-relaxed text-[#414141]">Structured video-based training + qualification assessment to standardise service.</p>
+                </div>
+                <div class="card-brutal p-8 bg-white border-b-8 border-b-[#50A459]">
+                    <span class="bg-[#414141] text-white px-2 py-0.5 text-[10px] font-black mb-4 inline-block">03 SOCIAL PROOF</span>
+                    <h4 class="font-black mb-3 text-[#414141]">Reputation > Authority</h4>
+                    <p class="text-xs opacity-80 leading-relaxed text-[#414141]">Authentic transaction reviews drive decision-making more effectively.</p>
+                </div>
+                <div class="card-brutal p-8 bg-white border-b-8 border-b-[#F9E76C]">
+                    <span class="bg-[#414141] text-white px-2 py-0.5 text-[10px] font-black mb-4 inline-block">04 EFFICIENCY</span>
+                    <h4 class="font-black mb-3 text-[#414141]">Effort vs Reward</h4>
+                    <p class="text-xs opacity-80 leading-relaxed text-[#414141]">Optimise matching through geographic proximity to reduce commuting time.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16 text-[#414141]">
+                <div class="card-brutal bg-white p-6">
+                    <p class="font-black mb-4 text-sm underline decoration-2 decoration-[#8C70FF]">Persona Distribution Map: Service Provider</p>
+                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1771675761/Frame_7_a05qhh.png" class="w-full border-[2px] border-[#414141]">
+                </div>
+                <div class="card-brutal bg-white p-6">
+                    <p class="font-black mb-4 text-sm underline decoration-2 decoration-[#FD9243]">Persona Distribution Map: Pet Owner</p>
+                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1771675760/Frame_6_mhqkue.png" class="w-full border-[2px] border-[#414141]">
+                </div>
+            </div>
+        </section>
+
+        <!-- 04 Key Personas -->
+        <section id="persona-section">
+            <h2 class="heading-brutal text-4xl mb-10 text-[#414141]">04 — Key Personas</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                <!-- Summary Cards -->
+                <div class="bg-[#CAECF6] card-brutal p-8">
+                    <div class="w-12 h-12 bg-[#414141] flex items-center justify-center text-white text-xl font-black mb-4">Z</div>
+                    <h3 class="font-black text-xl mb-1 text-[#414141]">Ms. Zhang, 45</h3>
+                    <p class="bg-[#414141] text-white inline-block px-2 py-0.5 mb-4 text-[10px] font-black uppercase">Busy Pet Owner</p>
+                    <ul class="text-[10px] space-y-2 font-bold opacity-80">
+                        <li>• Stable work schedule</li>
+                        <li>• Urgent needs occasionally</li>
+                        <li>• Values transparency</li>
+                    </ul>
+                </div>
+                <div class="bg-[#F9E76C] card-brutal p-8">
+                    <div class="w-12 h-12 bg-[#414141] flex items-center justify-center text-white text-xl font-black mb-4">W</div>
+                    <h3 class="font-black text-xl mb-1 text-[#414141]">Wu, 20</h3>
+                    <p class="bg-[#414141] text-white inline-block px-2 py-0.5 mb-4 text-[10px] font-black uppercase">Passionate Student</p>
+                    <ul class="text-[10px] space-y-2 font-bold opacity-80">
+                        <li>• Loves animals / Flexible</li>
+                        <li>• Motivated by social</li>
+                        <li>• Dislikes complexity</li>
+                    </ul>
+                </div>
+                <div class="bg-[#414141] text-white card-brutal p-8">
+                    <div class="w-12 h-12 bg-red-500 flex items-center justify-center text-white text-xl font-black mb-4">!</div>
+                    <h3 class="font-black text-xl mb-1">High-Risk Users</h3>
+                    <p class="bg-red-500 text-white inline-block px-2 py-0.5 mb-4 text-[10px] font-black uppercase">Negative Persona</p>
+                    <p class="text-[10px] font-bold opacity-80">Malicious actors (animal abusers). Defines the red-line constraints.</p>
+                </div>
+            </div>
+
+            <!-- DETAILED PERSONA SCROLL -->
+            <div class="persona-analysis-section" id="persona-scroll">
+                <div class="sticky-wrapper">
+                    <div class="scrolling-track" id="persona-track">
+                        
+                        <!-- CARD 1: ZHANG WU -->
+                        <div class="persona-card-full" style="background-color: #CAECF6;">
+                            <div class="left-panel">
+                                <div class="avatar-box-refined">
+                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1771679313/IMG_2633_yb5fpt.jpg" alt="Zhang Wu">
+                                </div>
+                                <div class="basic-info">
+                                    <p>Name: Zhang Wu</p>
+                                    <p>Age: 45 / Chengdu</p>
+                                    <p>Job: Instructor</p>
+                                    <p>Pet: Samoyed</p>
+                                </div>
+                            </div>
+                            <div class="content-column">
+                                <div class="module-block">
+                                    <h4 class="module-title-refined">Scenario</h4>
+                                    <p class="module-text-refined">Ms. Zhang plans to dine with friends. Her dog is home alone. She needs a reliable person to walk her dog and return it safely so her pet is cared for while she's away.</p>
+                                </div>
+                                <div class="module-block">
+                                    <h4 class="module-title-refined">Expectations</h4>
+                                    <ul class="list-refined text-[0.8rem] font-bold">
+                                        <li>Short-term home care or walking.</li>
+                                        <li>Certified/vetted providers.</li>
+                                        <li>Detailed service guarantees.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="content-column">
+                                <div class="module-block">
+                                    <h4 class="module-title-refined">Pain Points</h4>
+                                    <ul class="list-refined text-[0.8rem] font-bold">
+                                        <li>Trust established with strangers.</li>
+                                        <li>Fear of accidents/illness.</li>
+                                        <li>Property/Home security.</li>
+                                    </ul>
+                                </div>
+                                <div class="module-block">
+                                    <h4 class="module-title-refined">Solutions</h4>
+                                    <ul class="list-refined text-[0.8rem] font-bold">
+                                        <li>Platform-borne Insurance.</li>
+                                        <li>Verified health/vaccination certs.</li>
+                                        <li>Simplified Training + Assessment.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CARD 2: WU YIYI -->
+                        <div class="persona-card-full" style="background-color: #F9E76C;">
+                            <div class="left-panel">
+                                <div class="avatar-box-refined">
+                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1771679312/IMG_2629_ia63xr.jpg" alt="Wu Yiyi">
+                                </div>
+                                <div class="basic-info">
+                                    <p>Name: Wu Yiyi</p>
+                                    <p>Age: 20 / Nanjing</p>
+                                    <p>Job: Undergraduate</p>
+                                    <p>Pet: Cat/Dog Lover</p>
+                                </div>
+                            </div>
+                            <div class="content-column">
+                                <div class="module-block">
+                                    <h4 class="module-title-refined">Scenario</h4>
+                                    <p class="module-text-refined">An outgoing student who loves pets. On weekends, she wants to help others walk dogs to relax. Finds existing platforms too "business-like".</p>
+                                </div>
+                                <div class="module-block">
+                                    <h4 class="module-title-refined">Expectations</h4>
+                                    <ul class="list-refined text-[0.8rem] font-bold">
+                                        <li>Connect with other pet lovers.</li>
+                                        <li>Purely enjoy dog interaction.</li>
+                                        <li>A way to relax on weekends.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="content-column">
+                                <div class="module-block">
+                                    <h4 class="module-title-refined">Pain Points</h4>
+                                    <ul class="list-refined text-[0.8rem] font-bold">
+                                        <li>Handling different breeds.</li>
+                                        <li>Registration is too complex.</li>
+                                        <li>Owners' lack of trust in youth.</li>
+                                    </ul>
+                                </div>
+                                <div class="module-block">
+                                    <h4 class="module-title-refined">Solutions</h4>
+                                    <ul class="list-refined text-[0.8rem] font-bold">
+                                        <li>Tiered pricing based on exp.</li>
+                                        <li>Video training boost.</li>
+                                        <li>Non-commercial app design.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CARD 3: YANG CHI (NEGATIVE) -->
+                        <div class="persona-card-full" style="background-color: #414141; color: white;">
+                            <div class="left-panel">
+                                <div class="avatar-box-refined" style="border-color: #ef4444;">
+                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1771679313/IMG_2634_ctdgol.jpg" alt="Yang Chi">
+                                </div>
+                                <div class="basic-info" style="color: white;">
+                                    <p>Name: Yang Chi</p>
+                                    <p>Age: 26 / Wuxi</p>
+                                    <p>Job: Driver</p>
+                                    <p>Risk: High</p>
+                                </div>
+                            </div>
+                            <div class="content-column">
+                                <div class="module-block" style="border-bottom-color: #ef4444;">
+                                    <h4 class="module-title-refined" style="color: #ef4444;">Scenario</h4>
+                                    <p class="module-text-refined" style="color: white;">Seeks "easy" profit without effort. Acts perfunctorily and might commit acts that jeopardize the owner's property security during home visits.</p>
+                                </div>
+                                <div class="module-block">
+                                    <h4 class="module-title-refined" style="color: #ef4444;">Behavior</h4>
+                                    <ul class="list-refined text-[0.8rem] font-bold" style="color: white;">
+                                        <li>Accepts orders but perfunctory.</li>
+                                        <li>Harmful to property security.</li>
+                                        <li>Low empathy for pets.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="content-column">
+                                <div class="module-block" style="border-bottom-color: #ef4444;">
+                                    <h4 class="module-title-refined" style="color: #ef4444;">Risk Analysis</h4>
+                                    <p class="module-text-refined" style="color: white;">High risk of service failure and potential criminal behavior (theft).</p>
+                                </div>
+                                <div class="module-block">
+                                    <h4 class="module-title-refined" style="color: #ef4444;">Solutions</h4>
+                                    <ul class="list-refined text-[0.8rem] font-bold" style="color: white;">
+                                        <li>GPS Route Tracking.</li>
+                                        <li>Mandatory Video Check-ins.</li>
+                                        <li>Real-name Traceability.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CARD 4: HE JINSHAN (NEGATIVE) -->
+                        <div class="persona-card-full" style="background-color: #414141; color: white;">
+                            <div class="left-panel">
+                                <div class="avatar-box-refined" style="border-color: #ef4444;">
+                                    <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1771679315/IMG_2635_za2by3.jpg" alt="He Jinshan">
+                                </div>
+                                <div class="basic-info" style="color: white;">
+                                    <p>Name: He Jinshan</p>
+                                    <p>Age: 30 / Nantong</p>
+                                    <p>Job: Pet Dealer</p>
+                                    <p>Risk: Extreme</p>
+                                </div>
+                            </div>
+                            <div class="content-column">
+                                <div class="module-block" style="border-bottom-color: #ef4444;">
+                                    <h4 class="module-title-refined" style="color: #ef4444;">Scenario</h4>
+                                    <p class="module-text-refined" style="color: white;">Pretends to love dogs to gain trust, then sells them illegally or abuses them for social media "clout," causing extreme brand damage.</p>
+                                </div>
+                                <div class="module-block">
+                                    <h4 class="module-title-refined" style="color: #ef4444;">Behavior</h4>
+                                    <ul class="list-refined text-[0.8rem] font-bold" style="color: white;">
+                                        <li>Illegal pet trading.</li>
+                                        <li>Animal abuse for traffic.</li>
+                                        <li>Venting frustration on pets.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="content-column">
+                                <div class="module-block" style="border-bottom-color: #ef4444;">
+                                    <h4 class="module-title-refined" style="color: #ef4444;">Risk Analysis</h4>
+                                    <p class="module-text-refined" style="color: white;">Extreme safety risk to pets and platform reputation.</p>
+                                </div>
+                                <div class="module-block">
+                                    <h4 class="module-title-refined" style="color: #ef4444;">Solutions</h4>
+                                    <ul class="list-refined text-[0.8rem] font-bold" style="color: white;">
+                                        <li>Community Blacklist System.</li>
+                                        <li>Strict Video Evidence Reporting.</li>
+                                        <li>Real-name Legal Tracking.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 05 Solutions & Features (Optimized & Compact) -->
+        <section class="pb-32">
+            <h2 class="heading-brutal text-4xl mb-10 text-[#414141]">05 — Solutions & Features</h2>
+            
+            <!-- Compact Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
+                <div class="card-brutal p-6 bg-[#8C70FF] text-white flex flex-col justify-between">
+                    <div>
+                        <h3 class="heading-brutal text-xl mb-4">Trust Hierarchy</h3>
+                        <div class="space-y-3">
+                            <div class="p-3 bg-white/10 border border-white/20">
+                                <h4 class="font-black text-sm mb-1">Real-name & Student ID</h4>
+                                <p class="text-[10px] opacity-90 leading-tight">Strong identity endorsement to reduce security anxiety.</p>
+                            </div>
+                            <div class="p-3 bg-white/10 border border-white/20">
+                                <h4 class="font-black text-sm mb-1">Streamlined Training</h4>
+                                <p class="text-[10px] opacity-90 leading-tight">Structured modules followed by quick assessment.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-brutal p-6 bg-white border-l-8 border-l-[#50A459] flex flex-col justify-between">
+                    <div>
+                        <h3 class="heading-brutal text-xl mb-4 text-[#50A459]">Safety First</h3>
+                        <div class="space-y-4 font-bold text-[#414141]">
+                            <div class="flex items-start gap-3">
+                                <span class="bg-[#50A459] text-white w-5 h-5 flex-shrink-0 flex items-center justify-center text-[10px] font-black">✓</span>
+                                <p class="text-[11px] leading-tight">Process Transparency: Mandatory photo/text updates.</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="bg-[#50A459] text-white w-5 h-5 flex-shrink-0 flex items-center justify-center text-[10px] font-black">✓</span>
+                                <p class="text-[11px] leading-tight">Insurance Coverage: Commercial insurance for incidents.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-brutal p-6 bg-[#FD9243] flex flex-col justify-between text-[#414141]">
+                    <div>
+                        <h3 class="heading-brutal text-xl mb-4">Community Experience</h3>
+                        <p class="text-sm font-black italic mb-2">De-commercialised</p>
+                        <p class="text-[11px] leading-tight font-bold">Build a hobby-based community space where pet owners and service providers build familiarity before engagement.</p>
+                    </div>
+                    <div class="mt-6 border border-[#414141] p-2 text-center">
+                        <p class="font-black uppercase tracking-widest text-[9px]">Doggo Go — Platform 2024</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Needs & Pain Points Mapping Section -->
+            <div id="mapping-container" class="relative bg-white card-brutal p-10 overflow-visible min-w-[900px] lg:min-w-full">
+                <!-- SVG 连接线层 -->
+                <svg id="mapping-svg-container"></svg>
+
+                <div class="flex justify-center mb-16 relative z-10">
+                    <div class="bg-[#414141] text-white px-8 py-2 heading-brutal text-sm shadow-md">
+                        Needs & Pain Points Analysis
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-12 gap-8 relative z-10">
+                    <!-- 左侧：服务提供者 -->
+                    <div class="col-span-3 space-y-3" id="provider-nodes">
+                        <div class="flex justify-end mb-4">
+                            <span class="bg-[#FD9243] text-white font-black px-4 py-1 text-[10px] uppercase tracking-tighter card-brutal shadow-none">
+                                Service Providers
+                            </span>
+                        </div>
+                        <!-- Nodes will be injected here -->
+                    </div>
+
+                    <!-- 中间：平台解决方案 -->
+                    <div class="col-span-6 px-12 space-y-3 pt-12" id="solution-nodes">
+                        <!-- Nodes will be injected here -->
+                    </div>
+
+                    <!-- 右侧：狗主人 -->
+                    <div class="col-span-3 space-y-3" id="owner-nodes">
+                        <div class="flex justify-start mb-4">
+                            <span class="bg-[#8C70FF] text-white font-black px-4 py-1 text-[10px] uppercase tracking-tighter card-brutal shadow-none">
+                                Dog Owners
+                            </span>
+                        </div>
+                        <!-- Nodes will be injected here -->
+                    </div>
+                </div>
+
+                <div class="mt-16 pt-6 border-t border-gray-100 text-center text-gray-400 text-[10px] tracking-[0.4em] uppercase font-bold">
+                    Relationship Insight Mapping System
+                </div>
+            </div>
+        </section>
+
+        <!-- 06 — Visual Showcase (Full-width, Borderless) -->
+        <section class="visual-showcase -mx-6 md:-mx-12 overflow-hidden">
+            <h2 class="heading-brutal text-4xl mb-10 px-6 md:px-12 text-[#414141]">06 — Visual Design & Showcase</h2>
+            <div class="flex flex-col">
+                <!-- Image 1 -->
+                <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1773831517/MacBook_Pro_16__-_18_hio3vk.png" alt="Showcase 1" class="w-full h-auto block">
+                <!-- Image 2 (Magnifiable) -->
+                <div class="magnifier-container w-full" id="magnify-area">
+                    <div class="magnifier-lens" id="lens"></div>
+                    <img id="target-img" src="https://res.cloudinary.com/dhonki8qe/image/upload/v1773831519/MacBook_Pro_16__-_19_hmzdzj.png" alt="Showcase 2" class="w-full h-auto block">
+                </div>
+                <!-- Image 3 -->
+                <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1773832368/MacBook_Pro_16__-_20_ikfsic.png" alt="Showcase 3" class="w-full h-auto block">
+                <!-- Video 1 -->
+                <video autoplay loop muted playsinline class="w-full h-auto block">
+                    <source src="https://res.cloudinary.com/dhonki8qe/video/upload/v1773831518/MacBook_Pro_16__-_21_gnmyhi.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <!-- Image 4 -->
+                <img src="https://res.cloudinary.com/dhonki8qe/image/upload/v1773831519/MacBook_Pro_16__-_22_pw9es0.png" alt="Showcase 4" class="w-full h-auto block">
+                <!-- Video 2 -->
+                <video autoplay loop muted playsinline class="w-full h-auto block">
+                    <source src="https://res.cloudinary.com/dhonki8qe/video/upload/v1773831517/MacBook_Pro_16__-_23_ephr7h.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="marquee mt-12 -mx-6 md:-mx-12">
+        <div class="marquee-content">
+            <span class="mx-6 heading-brutal text-sm">TRUST DRIVEN • COMMUNITY CARE • DOGGO GO • </span>
+            <span class="mx-6 heading-brutal text-sm">TRUST DRIVEN • COMMUNITY CARE • DOGGO GO • </span>
+            <span class="mx-6 heading-brutal text-sm">TRUST DRIVEN • COMMUNITY CARE • DOGGO GO • </span>
+            <span class="mx-6 heading-brutal text-sm">TRUST DRIVEN • COMMUNITY CARE • DOGGO GO • </span>
+        </div>
+    </footer>
 
     <script>
-        const profileData = {
-            nav: { logo: 'YUNDU.', links: [{ text: 'About', target: 'about' }, { text: 'Works', target: 'projects' }, { text: 'Contact', target: 'contact' }] },
-            hero: {
-                name: "Yundu Chen",
-                whoAmI: "I am a multidisciplinary designer bridging Strategic Service Design and Visual Creativity. I combine the logic of a strategist with the eye of an artist to create work that works.",
-                 whatIDoTags: ["Service & System Design", "User Experience", "Branding & Identity", "Visual Storytelling"],
-                background: "Based in London. RCA."
-            },
-            partners: ["TESCO", "RED CROSS", "WWF"],
-            contact: { email: "cydudyc.823@gmail.com" },
-            projects: [
-                { 
-                    id: 'genz-future', 
-                    name: "GenZ4Good — Designing Future Giving Models", 
-                    category: "Service", 
-                    tags: ["Service Design", "Strategy"], 
-                    cardImg: "https://res.cloudinary.com/dhonki8qe/image/upload/v1770513210/Frame_3_bkhfu8.jpg", 
-                    details: { 
-                        role: "Service Design Researcher · Strategy Specialist · Prototyping Lead", 
-                        year: "2025", 
-                        context: "Charities face declining long-term donor engagement and growing distrust, particularly among younger generations. While Gen Z shows strong interest in social impact, traditional donation models fail to resonate with their behaviours and expectations.", 
-                        opportunity: "How might charities shift from transactional fundraising to relationship-based engagement that nurtures future giving?",
-                        strategy: "Rather than building new platforms, this project explores how existing charity infrastructures can evolve.\nKey insight: Young people engage more through communities than institutions.",
-                        solution: "A charity–community collaboration framework:\nEmbedded partnership pathways within existing charity websites.\nSimplified onboarding for student societies and grassroots communities.\nEvent-based engagement models that build emotional investment over time.",
-                        impact: "Moves charity engagement from one-off donations → ongoing participation.\nCreates scalable collaboration channels between institutions and youth communities.\nStrengthens long-term trust-building mechanisms."
-                    }, 
-                    gallery: [] 
-                },
-                { id: 'tesco-clubcard', name: "Tesco Clubcard — Ecosystem Analysis", category: "Service", tags: ["Ecosystem"], details: { year: "2025", context: "Retail loyalty ecosystem analysis." }, gallery: ["", "", "", "", "", "", "", ""] },
-                { 
-                    id: 'cat-aid', 
-                    name: "Paw-to-Paw Cat — Mutual Aid", 
-                    category: "Service", 
-                    tags: ["Service Design", "Social Innovation"], 
-                    cardImg: "https://res.cloudinary.com/dhonki8qe/image/upload/v1770664948/12344cf_1_mxkzsd.png",
-                    details: { 
-                        role: "Service Design Researcher · Strategy Specialist · Prototyping Lead", 
-                        year: "2024", 
-                        context: "Rapid growth in pet ownership in China has increased demand for veterinary blood transfusions, yet structured donation systems remain limited. Resources are fragmented, blood type matching is complex, and unregulated markets introduce safety and ethical risks — making emergency donor searches highly stressful for pet owners.", 
-                        opportunity: "How might we reduce emergency stress for pet owners? Build sustainable donor networks instead of one-off matching?",
-                        strategy: "Instead of viewing blood donation as a medical transaction, the system reframes participation as relationship-building (Friendship-based Donor Network).",
-                        solution: "A social-support ecosystem that transforms medical obligation into community support through friendship networks.",
-                        impact: "Reshapes collaborative ecosystems for pet healthcare, moving from reactive matching to relationship-based support."
-                    }, 
-                    gallery: [] 
-                },
-                { 
-                    id: 'urban-futures', 
-                    name: "Co-Vision Chess — Participatory Urban Futures", 
-                    category: "Service", 
-                    tags: ["Civic", "Service Design", "AI"], 
-                    cardImg: "https://res.cloudinary.com/dhonki8qe/video/upload/v1770717246/2%E6%9C%8810%E6%97%A5_dbdoip.mov",
-                    details: { 
-                        year: "2024", 
-                        context: "Urban planning processes in China often lack meaningful citizen participation, resulting in disengagement and reduced community ownership.",
-                        opportunity: "Enable residents to actively shape future development conversations.",
-                        strategy: "",
-                        solution: "A collaborative speculative platform combining:\nphysical co-design toolkit\nAI-assisted future simulations\ndigital participation platform.\nResidents explore scenarios through gameplay, making complex planning discussions accessible.",
-                        impact: "Translates abstract planning concepts into tangible experiences.\nStrengthens collective vision-building."
-                    }, 
-                    gallery: [] 
-                },
-                { id: 'doggo-go', name: "Doggo Go — Community Care", category: "Service", tags: ["Pet Care"], details: { year: "2023", context: "Shared pet responsibility platform." }, gallery: ["", "", "", "", "", "", "", ""] },
-                { id: 'i-me-ai', name: "I, Me — AI Intimacy Design", category: "Visual", tags: ["Speculative"], details: { year: "2025", context: "Speculative intimacy in AI era." }, gallery: ["", "", "", "", "", "", "", ""] },
-                { 
-                    id: 'star-retro', name: "Star Retrocession — Traditional Cosmology", category: "Visual", tags: ["UI", "3D", "Heritage"],
-                    cardImg: "https://res.cloudinary.com/dhonki8qe/video/upload/v1770425013/star07_yjp74m.mp4",
-                    details: { year: "2024", context: "A cultural innovation project reinterpreting the traditional Chinese 28 Lunar Mansions through interactive digital media.", opportunity: "Reinterpret ancient star systems through digital interaction.", strategy: "A digital “constellation garden”: 3D botanical forms translated from celestial structures.", impact: "Bridges cultural heritage with modern aesthetics." },
-                    gallery: [] // Handled by custom Star Retro section
-                },
-                { id: 'zhicha', name: "Zhicha — Wellness Tea Brand", category: "Visual", tags: ["Branding"], details: { year: "2025", context: "Inspired by traditional herbal culture." }, gallery: ["", "", "", "", "", "", "", ""] },
-                { 
-                    id: 'beicangmen', name: "Beicangmen Art District — Wayfinding", category: "Visual", tags: ["Signage"], 
-                    cardImg: "https://res.cloudinary.com/dhonki8qe/image/upload/v1772452658/%E7%94%BB%E6%9D%BF_86_6x_zjiui4.png",
-                    details: { 
-                        year: "2024", 
-                        context: "Former silk warehouse turned art district lacks visibility and coherent navigation.",
-                        strategy: "Rebuild spatial identity through environmental graphics.",
-                        solution: "Thread-inspired visual language referencing historical silk industry. Integrated signage improving visitor journey clarity.",
-                        impact: "Strengthens place identity while improving usability."
-                    }, 
-                    gallery: [] 
-                },
-                { 
-                    id: 'full-luck', 
-                    name: "Full Luck", 
-                    category: "Visual", 
-                    tags: ["Product"], 
-                    cardImg: "https://res.cloudinary.com/dhonki8qe/image/upload/v1772499189/Frame_8_uqfbi3.png",
-                    details: { 
-                        year: "2024", 
-                        context: "Huishan clay figurines are a traditional folk art from Wuxi with over 400 years of history and recognised as national intangible cultural heritage.\nKnown figures such as “A Fu” symbolise fortune and joy.",
-                        strategy: "creative thinking：\nReplace traditional card characters with clay figurine-inspired children.\nIntegrate pun-based branding:\n“服了” (concede) ↔ “福了” (blessing).",
-                        solution: "Contemporary playing card system translating heritage characters into playful narratives.\nCultural creative poker set.\nDice accessories extending gameplay.",
-                        impact: ""
-                    }, 
-                    gallery: [] 
-                },
-                { 
-                    id: 'share-bite', 
-                    name: "Share a Bite — Shared Kitchen", 
-                    category: "Visual", 
-                    tags: ["Branding"], 
-                    cardImg: "https://res.cloudinary.com/dhonki8qe/image/upload/v1773011074/Frame_315_i1n4y2.png",
-                    details: { 
-                        year: "2024", 
-                        context: "University students seek flexible cooking spaces but face safety and infrastructure constraints.",
-                        solution: "Shared kitchen service model combining:\nsafe cooking facilities\nsocial dining experience\naffordable group gathering.\nBrand concept emphasises food sharing as social bonding."
-                    }, 
-                    gallery: [
-                        "https://res.cloudinary.com/dhonki8qe/image/upload/v1773009907/MacBook_Pro_16__-_19_ykl5gb.png",
-                        "https://res.cloudinary.com/dhonki8qe/image/upload/v1773010016/MacBook_Pro_16__-_18_jallf5.png",
-                        "https://res.cloudinary.com/dhonki8qe/image/upload/v1773010016/MacBook_Pro_16__-_17_o2zbrs.png",
-                        "https://res.cloudinary.com/dhonki8qe/image/upload/v1773009907/MacBook_Pro_16__-_20_a13vfl.png"
-                    ] 
-                }
+        // Data & Connections
+        const mappingData = {
+            serviceProviders: [
+                { id: 's1', text: "Worried about unvaccinated pets or viruses infecting own pets/loss of service." },
+                { id: 's2', text: "Want to encounter high-quality pets and favorite breeds." },
+                { id: 's3', text: "Difficult to find local social circles; platform is too commercial." },
+                { id: 's4', text: "Hope to meet pets of specific breeds." },
+                { id: 's5', text: "Need to learn general pet care and handling knowledge." },
+                { id: 's6', text: "Concerned about personal qualifications; lack of breed knowledge may lead to accidents." },
+                { id: 's7', text: "Prefer orders closer to home." },
+                { id: 's8', text: "Lack of trust in dog owners." },
+                { id: 's9', text: "Owner quality concerns; difficult owners make service stressful." },
+                { id: 's10', text: "Small market demand, few pets, unstable orders, many distant orders." },
+                { id: 's11', text: "Desire for trial sessions or physical contact before booking." },
+                { id: 's12', text: "Slow/complex platform review process; high entry barrier." },
+                { id: 's13', text: "Pets may be aggressive, posing a threat to personal safety." }
+            ],
+            solutions: [
+                { id: 'm1', text: "Direct owner records/health certs; sitter communication confirmation." },
+                { id: 'm2', text: "Establish community features (linked to functions) [On/Off toggle]." },
+                { id: 'm3', text: "Platform provides online training and exams." },
+                { id: 'm4', text: "Evaluation mechanism; mutual transparency; pre-meeting communication." },
+                { id: 'm5', text: "Regular status reporting with text and photo support." },
+                { id: 'm6', text: "Multi-level qualifications (3 tiers); varying standards." },
+                { id: 'm7', text: "Professional assessment program; randomized large question bank." },
+                { id: 'm8', text: "Optional full-process recording/monitoring." },
+                { id: 'm9', text: "Insurance (Injuries to people/dogs) [Paid by dog owner]." },
+                { id: 'm10', text: "Real-name verification & Student verification." },
+                { id: 'm11', text: "User reporting and blacklist mechanism." },
+                { id: 'm12', text: "Advice for owners to install surveillance & alarms." }
+            ],
+            owners: [
+                { id: 'o1', text: "Need more channels to evaluate sitters for better familiarity." },
+                { id: 'o2', text: "Want to find professionals with specific qualifications." },
+                { id: 'o3', text: "Risk of fake sitters on social platforms; potential pet abuse/kidnap." },
+                { id: 'o4', text: "Sitters neglecting pets; platform trust issues if only compensation is offered." },
+                { id: 'o5', text: "Concerns about sitter character or professionalism." },
+                { id: 'o6', text: "Orders accepted but needs not met; irresponsible behavior." },
+                { id: 'o7', text: "Concerns about dog running away, refusing leash, or biting." },
+                { id: 'o8', text: "Fear of accidents, such as pet injury or death." },
+                { id: 'o9', text: "Like to document the process and share on social media." },
+                { id: 'o10', text: "Concerns about personal and property safety." }
+            ],
+            connections: [
+                { from: 's1', to: 'm1' }, { from: 's2', to: 'm2' }, { from: 's3', to: 'm2' },
+                { from: 's4', to: 'm2' }, { from: 's5', to: 'm3' }, { from: 's6', to: 'm3' },
+                { from: 's8', to: 'm4' }, { from: 's9', to: 'm4' }, { from: 's8', to: 'm11' },
+                { from: 's7', to: 'm5' }, { from: 's12', to: 'm6' }, { from: 's12', to: 'm7' },
+                { from: 's12', to: 'm10' }, { from: 's11', to: 'm8' }, { from: 's13', to: 'm9' },
+                { from: 's13', to: 'm12' }, { from: 'o1', to: 'm4' }, { from: 'o2', to: 'm6' },
+                { from: 'o3', to: 'm10' }, { from: 'o3', to: 'm4' }, { from: 'o4', to: 'm4' },
+                { from: 'o4', to: 'm11' }, { from: 'o5', to: 'm4' }, { from: 'o5', to: 'm6' },
+                { from: 'o5', to: 'm7' }, { from: 'o6', to: 'm11' }, { from: 'o7', to: 'm9' },
+                { from: 'o8', to: 'm9' }, { from: 'o9', to: 'm5' }, { from: 'o10', to: 'm12' },
+                { from: 'o10', to: 'm10' }
             ]
         };
 
-        const { createApp, ref, onMounted, onUnmounted, nextTick, computed, watch } = Vue;
+        function renderMapping() {
+            const pCont = document.getElementById('provider-nodes');
+            const mCont = document.getElementById('solution-nodes');
+            const oCont = document.getElementById('owner-nodes');
 
-        createApp({
-            setup() {
-                const profile = ref(profileData);
-                const cursorDot = ref(null);
-                const cursorOutline = ref(null);
-                const currentView = ref('home');
-                const focusedProject = ref(null);
+            mappingData.serviceProviders.forEach(item => {
+                const div = document.createElement('div');
+                div.id = item.id;
+                div.className = "node-item card-brutal node-s text-right";
+                div.innerText = item.text;
+                pCont.appendChild(div);
+            });
 
-                const cursorHover = () => document.body.classList.add('hovering');
-                const cursorLeave = () => document.body.classList.remove('hovering');
+            mappingData.solutions.forEach(item => {
+                const div = document.createElement('div');
+                div.id = item.id;
+                div.className = "node-item card-brutal node-m";
+                div.innerText = item.text;
+                mCont.appendChild(div);
+            });
 
-                const serviceProjects = computed(() => profile.value.projects.filter(p => p.category === 'Service'));
-                const visualProjects = computed(() => profile.value.projects.filter(p => p.category === 'Visual'));
-                const maxProjectRows = computed(() => Math.max(serviceProjects.value.length, visualProjects.value.length));
+            mappingData.owners.forEach(item => {
+                const div = document.createElement('div');
+                div.id = item.id;
+                div.className = "node-item card-brutal node-o text-left";
+                div.innerText = item.text;
+                oCont.appendChild(div);
+            });
 
-                const getProjectByRow = (category, index) => {
-                    const list = category === 'Service' ? serviceProjects.value : visualProjects.value;
-                    return list[index] || null;
-                };
+            setTimeout(drawLines, 500);
+        }
 
-                const setView = (view) => {
-                    currentView.value = view;
-                    nextTick(() => window.scrollTo(0, 0));
-                };
+        function drawLines() {
+            const svg = document.getElementById('mapping-svg-container');
+            if (!svg) return;
+            const container = document.getElementById('mapping-container').getBoundingClientRect();
+            svg.innerHTML = ''; // Clear existing
 
-                const scrollToTop = () => setView('home');
+            mappingData.connections.forEach(conn => {
+                const fromEl = document.getElementById(conn.from);
+                const toEl = document.getElementById(conn.to);
+                if (!fromEl || !toEl) return;
 
-                const handleNavClick = (target) => {
-                    if (target === 'about') scrollToTop();
-                    else {
-                        const el = document.getElementById(target + '-anchor') || document.getElementById(target);
-                        if (currentView.value !== 'home') {
-                            currentView.value = 'home';
-                            nextTick(() => { if (el) el.scrollIntoView({ behavior: 'smooth' }); });
-                        } else {
-                            if (el) el.scrollIntoView({ behavior: 'smooth' });
-                        }
-                    }
-                };
+                const fromRect = fromEl.getBoundingClientRect();
+                const toRect = toEl.getBoundingClientRect();
 
-                // --- POKER SYSTEM IMPLEMENTATION ---
-                class PokerInteractiveSystem {
-                    constructor() {
-                        this.canvas = document.getElementById('pkrCanvas');
-                        this.section = document.getElementById('pkrSection');
-                        if (!this.canvas || !this.section) return;
-                        this.cards = [];
-                        this.selectedCards = [];
-                        this.assets = {
-                            numbers: [
-                                "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491898/%E6%96%B9%E5%9D%971_ocm2iz.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491901/%E6%96%B9%E5%9D%972_ubw80p.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491902/%E6%96%B9%E5%9D%973_wuby0k.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491897/%E6%96%B9%E5%9D%974_chresf.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491897/%E6%96%B9%E5%9D%975_tgnc1z.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491897/%E6%96%B9%E5%9D%976_cxxazk.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491897/%E6%96%B9%E5%9D%977_ur7rnt.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491929/%E6%96%B9%E5%9D%978_loa5gg.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491929/%E6%96%B9%E5%9D%979_dkokhh.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491904/%E6%96%B9%E5%9D%9710_seibqy.png",
-                                "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491911/%E6%A2%85%E8%8A%B11_nucsjm.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491914/%E6%A2%85%E8%8A%B12_vx49fu.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491914/%E6%A2%85%E8%8A%B13_v1krwd.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491925/%E6%A2%85%E8%8A%B14_yayhst.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491925/%E6%A2%85%E8%8A%B15_s3dksg.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491920/%E6%A2%85%E8%8A%B16_wcjnaa.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491918/%E6%A2%85%E8%8A%B17_ei48fr.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491903/%E6%A2%85%E8%8A%B18_vvi9qp.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491904/%E6%A2%85%E8%8A%B19_zp5mq9.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491903/%E6%A2%85%E8%8A%B110_b4iecz.png",
-                                "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491925/%E7%BA%A2%E6%A1%831_jomolw.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491918/%E7%BA%A2%E6%A1%832_knektf.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491919/%E7%BA%A2%E6%A1%833_kd6moy.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491905/%E7%BA%A2%E6%A1%834_%E7%94%BB%E6%9D%BF_1_%E5%89%AF%E6%9C%AC_30_jt09c0.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491913/%E7%BA%A2%E6%A1%835_hcaxkn.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491917/%E7%BA%A2%E6%A1%836_nqivv8.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491913/%E7%BA%A2%E6%A1%837_khe1nh.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491908/%E7%BA%A2%E6%A1%838_geiomi.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491909/%E7%BA%A2%E6%A1%839_bmvjwi.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491902/%E7%BA%A2%E6%A1%8310_mumfoc.png",
-                                "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491906/%E9%BB%91%E6%A1%831_nsd85n.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491904/%E9%BB%91%E6%A1%832_vujit5.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491903/%E9%BB%91%E6%A1%833_nwm9qg.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491907/%E9%BB%91%E6%A1%834_bfyput.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491907/%E9%BB%91%E6%A1%835_wsz69a.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491907/%E9%BB%91%E6%A1%836_w7fym9.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491909/%E9%BB%91%E6%A1%837_drtes2.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491917/%E9%BB%91%E6%A1%838_ovmp2l.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491913/%E9%BB%91%E6%A1%839_hxmxar.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491897/%E9%BB%91%E6%A1%8310_frnnad.png"
-                            ],
-                            jqk: [
-                                "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491918/%E6%96%B9%E5%9D%97J%E9%98%BF%E5%96%9C_asqa5e.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491918/%E6%96%B9%E5%9D%97Q%E9%98%BF%E5%96%9C_ednyxx.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491930/%E6%96%B9%E5%9D%97K%E9%98%BF%E5%96%9C_ntv6h1.png",
-                                "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491913/%E6%A2%85%E8%8A%B1J%E9%98%BF%E7%A6%8F_aiwitf.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491913/%E6%A2%85%E8%8A%B1Q%E9%98%BF%E7%A6%8F_wl7nxo.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491928/%E6%A2%85%E8%8A%B1K%E9%98%BF%E7%A6%8F_yqtsua.png",
-                                "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491908/%E7%BA%A2%E6%A1%83J%E9%A6%8B%E7%8C%AB_ogbtue.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491910/%E7%BA%A2%E6%A1%83Q%E9%A6%8B%E7%8C%AB_u7jasg.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491898/%E7%BA%A2%E6%A1%83K%E9%A6%8B%E7%8C%AB_hpbdfk.png",
-                                "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491912/%E9%BB%91%E6%A1%83J%E9%9D%92%E9%A5%95%E5%85%BD_wfrl7o.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491898/%E9%BB%91%E6%A1%83Q%E9%9D%92%E9%A5%95%E5%85%BD_a5j3kc.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491897/%E9%BB%91%E6%A1%83K%E9%9D%92%E9%A5%95%E5%85%BD_nnij3a.png"
-                            ],
-                            jokers: [
-                                "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491925/%E5%B0%8F%E7%8E%8B_gfdl0t.png", "https://res.cloudinary.com/dhonki8qe/image/upload/v1772491925/%E5%B0%8F%E5%A4%A7%E7%8E%8B_qqvc3c.png"
-                            ]
-                        };
-                        this.init();
-                    }
+                const isFromLeft = conn.from.startsWith('s');
+                let startX, startY, endX, endY;
 
-                    init() { this.createCards(); this.setupGSAP(); }
-
-                    createCards() {
-                        const layout = [{ key: 'numbers', range: [0, 20], row: 0 }, { key: 'numbers', range: [20, 40], row: 1 }, { key: 'jqk', range: [0, 12], row: 2 }, { key: 'jokers', range: [0, 2], row: 3 }];
-                        layout.forEach(config => {
-                            const subset = this.assets[config.key].slice(config.range[0], config.range[1]);
-                            subset.forEach((url, i) => {
-                                const wrapper = document.createElement('div');
-                                wrapper.className = 'pkr-card-wrapper';
-                                const inner = document.createElement('div');
-                                inner.className = 'pkr-card-inner';
-                                inner.style.backgroundImage = `url('${url}')`;
-                                wrapper.appendChild(inner);
-                                const initRot = (Math.random() - 0.5) * 15;
-                                const initX = (Math.random() - 0.5) * 8;
-                                const initY = (Math.random() - 0.5) * 8;
-                                gsap.set(wrapper, { x: initX, y: initY, rotation: initRot, zIndex: i + config.row * 20 });
-                                this.canvas.appendChild(wrapper);
-                                const cardObj = { wrapper, inner, row: config.row, index: i, total: subset.length, initRot, initX, initY, isSelected: false };
-                                wrapper.onclick = () => this.handleCardClick(cardObj);
-                                this.cards.push(cardObj);
-                            });
-                        });
-                    }
-
-                    handleCardClick(card) {
-                        if (card.isSelected) {
-                            card.isSelected = false;
-                            card.wrapper.classList.remove('is-selected');
-                            this.selectedCards = this.selectedCards.filter(c => c !== card);
-                            gsap.to(card.inner, { x: 0, y: 0, scale: 1, rotation: 0, duration: 0.6, ease: "power2.inOut" });
-                            gsap.set(card.wrapper, { zIndex: card.index + card.row * 20 });
-                        } else {
-                            card.isSelected = true;
-                            card.wrapper.classList.add('is-selected');
-                            this.selectedCards.push(card);
-                            this.updateSelectedLayout();
-                        }
-                    }
-
-                    updateSelectedLayout() {
-                        this.selectedCards.forEach((card, i) => {
-                            let targetX = 0, targetY = 0;
-                            if (this.selectedCards.length === 1) targetX = 0;
-                            else if (this.selectedCards.length === 2) targetX = i === 0 ? -18 : 18;
-                            else if (this.selectedCards.length === 3) { const offsets = [-30, 0, 30]; targetX = offsets[i]; }
-                            else { const lastIndex = this.selectedCards.length - 1; targetX = (i - lastIndex) * 3; targetY = (i - lastIndex) * 2; }
-                            gsap.set(card.wrapper, { zIndex: 2000 + i });
-                            gsap.to(card.inner, { x: `${targetX}vw`, y: `${targetY}vh`, scale: 1.4, rotation: 0, duration: 0.8, ease: "expo.out" });
-                        });
-                    }
-
-                    setupGSAP() {
-                        const tl = gsap.timeline({ scrollTrigger: { trigger: this.section, start: "top top", end: "+=2600", pin: true, scrub: 1.2, anticipatePin: 1 } });
-                        this.cards.forEach(card => {
-                            const rowY = [-32, -10, 12, 34];
-                            let spread = card.row === 0 ? 115 : (card.row === 1 ? 95 : 85);
-                            if (card.row === 3) spread = 35;
-                            const targetX = ((card.index / (card.total - 1)) - 0.5) * spread;
-                            const targetRot = ((card.index / (card.total - 1)) - 0.5) * (card.total * 2.5);
-                            tl.to(card.wrapper, { x: `${targetX}vw`, y: `${rowY[card.row]}vh`, rotation: targetRot, duration: 1, ease: "none" }, 0);
-                        });
-                        tl.to(".pkr-card-wrapper", { x: (i) => this.cards[i].initX, y: (i) => this.cards[i].initY, rotation: (i) => this.cards[i].initRot, duration: 1, ease: "power2.inOut" }, 1.5);
-                        tl.to({}, { duration: 0.8 });
-                    }
+                if (isFromLeft) {
+                    startX = fromRect.right - container.left;
+                    startY = fromRect.top + fromRect.height / 2 - container.top;
+                    endX = toRect.left - container.left;
+                    endY = toRect.top + toRect.height / 2 - container.top;
+                } else {
+                    startX = fromRect.left - container.left;
+                    startY = fromRect.top + fromRect.height / 2 - container.top;
+                    endX = toRect.right - container.left;
+                    endY = toRect.top + toRect.height / 2 - container.top;
                 }
 
-                // --- VIEW MANAGEMENT ---
-                const initFullLuckPoker = () => { new PokerInteractiveSystem(); };
-                const handleBeicangScroll = () => {
-                    const parallaxSection = document.getElementById('bc-parallax-section');
-                    const parallaxImg = document.getElementById('bc-parallax-img');
-                    if (!parallaxSection || !parallaxImg) return;
-                    const rect = parallaxSection.getBoundingClientRect();
-                    const viewHeight = window.innerHeight;
-                    if (rect.top < viewHeight && rect.bottom > 0) {
-                        const scrollRange = viewHeight + rect.height;
-                        const scrollCurrent = viewHeight - rect.top;
-                        const progress = Math.max(0, Math.min(1, scrollCurrent / scrollRange));
-                        const maxTranslate = parallaxImg.offsetWidth - (parallaxSection.offsetWidth - parseFloat(window.getComputedStyle(parallaxSection).paddingLeft));
-                        if (maxTranslate > 0) parallaxImg.style.transform = `translateX(${-maxTranslate * progress}px)`;
-                    }
-                };
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                const offset = Math.abs(endX - startX) * 0.45;
+                const cp1x = startX + (isFromLeft ? offset : -offset);
+                const cp2x = endX + (isFromLeft ? -offset : offset);
+                
+                const d = `M ${startX} ${startY} C ${cp1x} ${startY}, ${cp2x} ${endY}, ${endX} ${endY}`;
+                
+                path.setAttribute("d", d);
+                path.setAttribute("fill", "none");
+                path.setAttribute("stroke", isFromLeft ? "#FD9243" : "#8C70FF");
+                path.setAttribute("stroke-width", "1.5");
+                path.setAttribute("stroke-dasharray", "4 3");
+                path.setAttribute("class", "opacity-40");
+                svg.appendChild(path);
+            });
+        }
 
-                watch(currentView, (val, oldVal) => {
-                    if (oldVal === 'beicangmen') { window.removeEventListener('scroll', handleBeicangScroll); window.removeEventListener('resize', handleBeicangScroll); }
-                    if (val === 'beicangmen') nextTick(() => { window.addEventListener('scroll', handleBeicangScroll); window.addEventListener('resize', handleBeicangScroll); });
-                    if (val === 'full-luck') nextTick(initFullLuckPoker);
-                    if (val === 'star-retro') nextTick(() => {
-                        const container = document.getElementById('logoContainer'), logo = document.getElementById('shakingLogo'), video9 = document.getElementById('p9Video');
-                        if (!container || !logo || !video9) return;
-                        container.addEventListener('mousemove', (e) => {
-                            const rect = container.getBoundingClientRect();
-                            const mouseX = (e.clientX - rect.left) / rect.width - 0.5, mouseY = (e.clientY - rect.top) / rect.height - 0.5;
-                            logo.style.transform = `translate(${mouseX * 60}px, ${mouseY * 60}px)`;
-                            video9.style.transform = `translate(${mouseX * 30}px, ${mouseY * 30}px)`;
-                        });
-                    });
-                });
-
-                onMounted(() => {
-                    window.addEventListener("mousemove", (e) => {
-                        if (cursorDot.value && cursorOutline.value) {
-                            cursorDot.value.style.left = `${e.clientX}px`;
-                            cursorDot.value.style.top = `${e.clientY}px`;
-                            gsap.to(cursorOutline.value, { x: e.clientX, y: e.clientY, duration: 0.15 });
-                        }
-                    });
-                });
-
-                const currentProject = computed(() => profile.value.projects.find(p => p.id === currentView.value));
-
-                return { profile, cursorDot, cursorOutline, focusedProject, currentView, setView, currentProject, cursorHover, cursorLeave, maxProjectRows, getProjectByRow, scrollToTop, handleNavClick };
+        // Persona Scroll Logic
+        const track = document.getElementById('persona-track');
+        const scrollSection = document.getElementById('persona-scroll');
+        
+        window.addEventListener('scroll', () => {
+            if (!scrollSection || !track) return;
+            const sectionTop = scrollSection.offsetTop;
+            const scrollDistance = window.pageYOffset - sectionTop;
+            const totalScrollableHeight = scrollSection.offsetHeight - window.innerHeight;
+            
+            if (scrollDistance >= 0 && scrollDistance <= totalScrollableHeight) {
+                const progress = scrollDistance / totalScrollableHeight;
+                const trackWidth = track.scrollWidth;
+                const maxTranslate = trackWidth - window.innerWidth + 100;
+                track.style.transform = `translateX(-${progress * maxTranslate}px)`;
             }
-        }).mount('#app');
+        });
+
+        // Magnifier Logic - Optimized for smoothness and edge accuracy
+        const magnifyArea = document.getElementById('magnify-area');
+        const lens = document.getElementById('lens');
+        const img = document.getElementById('target-img');
+        const zoom = 2;
+
+        let frameRequested = false;
+
+        magnifyArea.addEventListener('mousemove', (e) => {
+            if (frameRequested) return;
+            frameRequested = true;
+
+            // 使用 requestAnimationFrame 优化渲染频率
+            requestAnimationFrame(() => {
+                lens.style.visibility = 'visible';
+                const rect = magnifyArea.getBoundingClientRect();
+                
+                // 坐标计算：获取鼠标相对于容器的精确坐标
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const lensRadius = lens.offsetWidth / 2;
+                
+                // 硬件加速位移：使用 translate3d 避开 top/left 的排版计算
+                // 我们将镜片的坐标中心对准鼠标 (x - radius, y - radius)
+                lens.style.transform = `translate3d(${x - lensRadius}px, ${y - lensRadius}px, 0)`;
+
+                // 背景图计算逻辑：
+                // 为了让鼠标指的地方刚好在镜片中心，背景偏移量应为 -(鼠标坐标 * 缩放倍率) + 镜片半径
+                lens.style.backgroundImage = `url('${img.src}')`;
+                lens.style.backgroundSize = `${img.width * zoom}px ${img.height * zoom}px`;
+                lens.style.backgroundPosition = `${-(x * zoom - lensRadius)}px ${-(y * zoom - lensRadius)}px`;
+                
+                frameRequested = false;
+            });
+        });
+
+        magnifyArea.addEventListener('mouseleave', () => {
+            lens.style.visibility = 'hidden';
+        });
+
+        window.onload = () => {
+            renderMapping();
+            window.addEventListener('resize', () => {
+                drawLines();
+            });
+        };
     </script>
+
 </body>
 </html>
